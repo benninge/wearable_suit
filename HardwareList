@@ -1,1 +1,7 @@
- 
+4x mpu6050
+
+4x arduino boards (the ones which you have there)
+ws2812 led strip
+2x sound sensor
+
+2x STM32F411E-DISCO
