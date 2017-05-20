@@ -8,22 +8,22 @@ const byte LED_PIN = 13;
   
   void fWrite (const byte content)
     {
-    Serial.write (content);  
+    Serial1.write (content);  
     }
     
   int fAvailable ()
     {
-    return Serial.available ();  
+    return Serial1.available ();  
     }
   
   int fRead ()
     {
-    return Serial.read ();  
+    return Serial1.read ();  
     } 
     
 void setup()
 {
-  Serial.begin (28800);
+  Serial1.begin (28800);
   pinMode (ENABLE_PIN, OUTPUT);  // driver output enable
   pinMode (LED_PIN, OUTPUT);  // built-in LED
 }  // end of setup
@@ -45,8 +45,8 @@ void loop()
  digitalWrite (ENABLE_PIN, LOW);  // disable sending  
 
   // receive response  
-  byte buf [10];
-  byte received = recvMsg (fAvailable, fRead, buf, sizeof buf);
+  byte buffer [10];
+  byte received = recvMsg (fAvailable, fRead, buffer, sizeof buffer);
   
   digitalWrite (LED_PIN, received == 0);  // turn on LED if error    
 
