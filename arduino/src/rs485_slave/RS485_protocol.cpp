@@ -197,4 +197,3 @@ byte recvMsg (AvailableCallback fAvailable,   // return available count
 
   return 0;  // timeout
 } // end of recvMsg
-
