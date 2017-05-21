@@ -28,7 +28,7 @@ void setup()
   pinMode (ENABLE_PIN, OUTPUT);  // driver output enable
   pinMode (LED_PIN, OUTPUT);  // built-in LED
   digitalWrite (ENABLE_PIN, LOW);  // disable sending
-}  // end of setup
+}
 
 
 void loop()
