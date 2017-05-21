@@ -1,0 +1,7 @@
+## sloeber IDE
+*.metadata*
+*TempFiles*
+*.cproject
+*.ino.cpp
+*.settings
+*Release/*
