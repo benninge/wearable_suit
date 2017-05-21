@@ -2,7 +2,6 @@
 
 const byte ENABLE_PIN = 4;
 const byte LED_PIN = 13;
-const byte TIMEOUT = 1000;
 int counter = 0;
 
 // callback routines
@@ -26,9 +25,9 @@ void setup()
 {
   Serial1.begin(28800);
   Serial.begin(28800);
-  // while the serial stream is not open, do nothing:
   pinMode (ENABLE_PIN, OUTPUT);  // driver output enable
   pinMode (LED_PIN, OUTPUT);  // built-in LED
+  digitalWrite (ENABLE_PIN, LOW);  // disable sending
 }  // end of setup
 
 
@@ -44,7 +43,7 @@ void loop()
   // send to slave
  digitalWrite (ENABLE_PIN, HIGH);  // enable sending
  sendMsg (fWrite, msg, sizeof msg);
- delayMicroseconds (5000);
+ Serial1.flush();
  digitalWrite (ENABLE_PIN, LOW);  // disable sending
 
   // receive response

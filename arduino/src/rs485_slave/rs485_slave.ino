@@ -43,10 +43,10 @@ void loop()
        3,  // turn light on command received
     };
 
-    delay (6);  // give the master a moment to prepare to receive
+    delay (2);  // give the master a moment to prepare to receive
     digitalWrite (ENABLE_PIN, HIGH);  // enable sending
     sendMsg (fWrite, msg, sizeof msg);
-    delay(3);
+    Serial.flush();
     digitalWrite (ENABLE_PIN, LOW);  // disable sending
 
    }
