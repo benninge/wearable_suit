@@ -6974,6 +6974,7 @@ DIN A5, landscape with doc field</description>
 <wire x1="398.78" y1="38.1" x2="398.78" y2="35.56" width="0.1524" layer="91"/>
 <pinref part="U$5" gate="G$1" pin="GND"/>
 <pinref part="U$5" gate="G$1" pin="CTS"/>
+<junction x="398.78" y="35.56"/>
 </segment>
 </net>
 <net name="-RE" class="0">
@@ -7213,6 +7214,7 @@ DIN A5, landscape with doc field</description>
 <pinref part="R2" gate="G$1" pin="1"/>
 <wire x1="96.52" y1="101.6" x2="88.9" y2="101.6" width="0.1524" layer="91"/>
 <wire x1="96.52" y1="104.14" x2="96.52" y2="101.6" width="0.1524" layer="91"/>
+<junction x="96.52" y="101.6"/>
 </segment>
 </net>
 <net name="DTR" class="0">
