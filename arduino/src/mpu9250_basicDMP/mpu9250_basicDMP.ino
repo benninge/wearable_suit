@@ -32,7 +32,7 @@ void loop() {
 		return;
     }
 
-    if (!(c%25)) {
+    if (!(c%10)) {
 	    Serial.print(np); Serial.print("  "); Serial.print(err_c); Serial.print(" "); Serial.print(err_o);
 	    Serial.print(" Y: "); Serial.print(mympu.ypr[0]);
 	    Serial.print(" P: "); Serial.print(mympu.ypr[1]);
@@ -40,5 +40,8 @@ void loop() {
 	    Serial.print("\tgy: "); Serial.print(mympu.gyro[0]);
 	    Serial.print(" gp: "); Serial.print(mympu.gyro[1]);
 	    Serial.print(" gr: "); Serial.println(mympu.gyro[2]);
+	    Serial.print(" a1: "); Serial.print(mympu.accel[0]);
+	    Serial.print(" a2: "); Serial.print(mympu.accel[1]);
+	    Serial.print(" a3: "); Serial.println(mympu.accel[2]);
     }
 }

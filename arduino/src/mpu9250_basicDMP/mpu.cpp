@@ -21,6 +21,8 @@ union u_quat {
 
 static int ret;
 static short gyro[3];
+unsigned short int ACCEL_SENS;
+static short accel[3];
 static short sensors;
 static unsigned char fifoCount;
 
@@ -76,8 +78,13 @@ int mympu_open(unsigned int rate) {
 	if (ret) return 100+ret;
 #endif
 
-	ret = dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT|DMP_FEATURE_SEND_CAL_GYRO|DMP_FEATURE_GYRO_CAL);
-//	ret = dmp_enable_feature(DMP_FEATURE_SEND_CAL_GYRO|DMP_FEATURE_GYRO_CAL);
+	ret = mpu_get_accel_sens(&ACCEL_SENS);
+#ifdef MPU_DEBUG
+	if (ret) return 110+ret;
+#endif
+
+//	ret = dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT|DMP_FEATURE_SEND_CAL_GYRO|DMP_FEATURE_GYRO_CAL);
+	ret = dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT|DMP_FEATURE_SEND_CAL_GYRO|DMP_FEATURE_GYRO_CAL|DMP_FEATURE_SEND_RAW_ACCEL);
 #ifdef MPU_DEBUG
 	if (ret) return 110+ret;
 #endif
@@ -127,7 +134,7 @@ static inline float wrap_180(float x) {
 int mympu_update() {
 
 	do {
-		ret = dmp_read_fifo(gyro,NULL,q._l,NULL,&sensors,&fifoCount);
+		ret = dmp_read_fifo(gyro,accel,q._l,NULL,&sensors,&fifoCount);
 		/* will return:
 			0 - if ok
 			1 - no packet available
@@ -159,6 +166,9 @@ int mympu_update() {
 	mympu.gyro[1] = (float)gyro[1] / GYRO_SENS;
 	mympu.gyro[2] = (float)gyro[0] / GYRO_SENS;
 
+	mympu.accel[0] = (float)accel[2] / ACCEL_SENS;
+	mympu.accel[1] = (float)accel[1] / ACCEL_SENS;
+	mympu.accel[2] = (float)accel[0] / ACCEL_SENS;
 	return 0;
 }
 
