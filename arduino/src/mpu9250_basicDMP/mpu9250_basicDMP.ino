@@ -3,9 +3,20 @@
 #include "I2Cdev.h"
 #include "RS485_protocol.h"
 
-const byte ENABLE_PIN = 4;
+#define DMP_DEBUG
+
+const byte ENABLE_PIN = 7;
 const byte SLAVE_ID = 1;
 union float2bytes { float f; byte b[sizeof(float)]; };
+float2bytes ypr0;
+float2bytes ypr1;
+float2bytes ypr2;
+float2bytes gyro0;
+float2bytes gyro1;
+float2bytes gyro2;
+float2bytes accel0;
+float2bytes accel1;
+float2bytes accel2;
 
 
 void fWrite (const byte content)
@@ -28,7 +39,7 @@ int ret;
 void setup() {
     Fastwire::setup(400,0);
     Serial.begin(38400);
-    ret = mympu_open(200);
+    ret = mympu_open(100);
     pinMode (ENABLE_PIN, OUTPUT);  // driver output enable
     digitalWrite (ENABLE_PIN, LOW);
 
@@ -44,12 +55,14 @@ unsigned int err_c = 0; //cumulative number of MPU/DMP reads that brought corrup
 unsigned int err_o = 0; //cumulative number of MPU/DMP reads that had overflow bit set
 
 void loop() {
+    ret = mympu_update(); // get new sensor data
 
     byte buffer [10];
 
-    byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer));
+    byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer), 50);
 
     if (received != 0)
+    //if (false)
       {
       if (buffer [0] != SLAVE_ID)
         return;  // not my device
@@ -58,18 +71,6 @@ void loop() {
       if (buffer [1] != 2)
         return;  // unknown command
 
-      ret = mympu_update(); // get new sensor data
-      delay (2);  // give the master a moment to prepare to receive
-
-      float2bytes ypr0;
-      float2bytes ypr1;
-      float2bytes ypr2;
-      float2bytes gyro0;
-      float2bytes gyro1;
-      float2bytes gyro2;
-      float2bytes accel0;
-      float2bytes accel1;
-      float2bytes accel2;
 
       ypr0.f = mympu.ypr[0];
       ypr1.f = mympu.ypr[1];
@@ -81,10 +82,7 @@ void loop() {
       accel1.f = mympu.accel[1];
       accel2.f = mympu.accel[2];
 
-//receiving on stm32:
-//       for ( int i=0; i < sizeof(float); i++ )
-//         f2b.b[i] = read_byte();
-//       x = f2b.f;
+      delay (2);  // give the master a moment to prepare to receive
 
       byte msg [] = {
          0,  // send to master
@@ -146,8 +144,7 @@ void loop() {
 		return;
     }
 
-    if (!(c%10)) {
-	    Serial.print(np); Serial.print("  "); Serial.print(err_c); Serial.print(" "); Serial.print(err_o);
+	    Serial.print(c); Serial.print(np); Serial.print("  "); Serial.print(err_c); Serial.print(" "); Serial.print(err_o);
 	    Serial.print(" Y: "); Serial.print(mympu.ypr[0]);
 	    Serial.print(" P: "); Serial.print(mympu.ypr[1]);
 	    Serial.print(" R: "); Serial.print(mympu.ypr[2]);
@@ -157,6 +154,5 @@ void loop() {
 	    Serial.print(" a1: "); Serial.print(mympu.accel[0]);
 	    Serial.print(" a2: "); Serial.print(mympu.accel[1]);
 	    Serial.print(" a3: "); Serial.println(mympu.accel[2]);
-    }
 #endif
 }
