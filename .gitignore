@@ -6,3 +6,8 @@
 *.settings
 *Release*
 *.project*
+
+##stm32
+*.l#*
+*.b#*
+*.s#*
