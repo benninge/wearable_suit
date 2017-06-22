@@ -24,33 +24,23 @@ int main(void)
 {
 	ledSuit_init();
 
-	for(;;)
+	while (1)
 	{
-		ledSuit_colorLeftArm(red);
-		ledSuit_colorRightArm(white);
+		ledSuit_colorBodyPart(leftArm, red, 1);
+		ledSuit_colorBodyPart(rightArm, green, 1);
+		ledSuit_colorBodyPart(leftLeg, blue, 1);
+		ledSuit_colorBodyPart(rightLeg, yellow, 1);
 		Delay(1000);
-		ledSuit_colorLeftArm(orange);
+		ledSuit_colorBodyPartRgb(leftArm, 50, 50, 50, 1);
+		ledSuit_colorBodyPartRgb(rightArm, 50, 50, 50, 0);
 		Delay(1000);
-		ledSuit_colorLeftArm(yellow);
+		ledSuit_updateAll();
 		Delay(1000);
-		ledSuit_colorLeftArm(green);
+		ledSuit_colorAll(white, 1);
 		Delay(1000);
-		ledSuit_colorLeftArm(teal);
+		ledSuit_enableAll(0, 1);
 		Delay(1000);
-		ledSuit_colorLeftArm(blue);
-		Delay(1000);
-		ledSuit_colorLeftArm(purple);
-		Delay(1000);
-		ledSuit_colorLeftArm(pink);
-		Delay(1000);
-		ledSuit_colorLeftArm(white);
-		Delay(1000);
-		ledSuit_colorLeftArmRgb(50, 50, 50);
-		ledSuit_colorRightArmRgb(50, 50, 50);
-		Delay(1000);
-		ledSuit_enableLeftArm(0);
-		Delay(1000);
-		ledSuit_enableLeftArm(1);
+		ledSuit_enableAll(1, 1);
 		Delay(1000);
 	}
 }
