@@ -3,8 +3,8 @@
   <board id="stm32f411e-disco">
     <name>STM32F411E-DISCO</name>
     <mcuId>stm32f411vetx</mcuId>
-    <dbgIF>JTAG</dbgIF>
     <dbgIF>SWD</dbgIF>
+    <dbgIF>JTAG</dbgIF>
     <dbgDEV>ST-LinkV2</dbgDEV>
   </board>
 </targetDefinitions>
