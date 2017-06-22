@@ -4,7 +4,7 @@
 #ifndef WS2811_H
 #define WS2811_H
 
-#include "stdint.h"
+#include <stdint.h>
 #include <stdio.h>
 
 //Attention!! Hardware dependancy!!
