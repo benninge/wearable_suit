@@ -13,6 +13,7 @@
 
 #include "lib/ledSuit.h"
 
+
 void Delay(uint32_t time)
 {
 	time *= 10000;
