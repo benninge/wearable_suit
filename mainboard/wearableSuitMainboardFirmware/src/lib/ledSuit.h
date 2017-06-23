@@ -35,6 +35,12 @@ typedef enum
 	bodyPartEnumSize // Used to determine enum size
 } bodyPart;
 
+typedef enum
+{
+	forwards,
+	backwards
+} direction;
+
 
 
 // Initializes the LED suit with all LEDs switched off (all LEDs are enabled with color (0, 0, 0))
@@ -93,6 +99,19 @@ void ledSuit_colorBodyPartRgbLed(bodyPart bodyPart, rgbLed rgb, uint8_t update);
 // Updates the LED strips only if (update != 0)
 void ledSuit_colorAllRgbLed(rgbLed rgb, uint8_t update);
 
+// Colors a body part with a color fade of 2 to 10 colors
+// Updates the LED strips only if (update != 0)
+void ledSuit_colorBodyPartColorFade(bodyPart bodyPart, uint8_t colorCount, rgbLed * colors, uint8_t update);
+// Colors the whole suit with a color fade of 2 to 10 colors
+// Updates the LED strips only if (update != 0)
+void ledSuit_colorAllColorFade(uint8_t colorCount, rgbLed * colors, uint8_t update);
+
+// Rotates the colors of a body part in the given direction
+// Updates the LED strips only if (update != 0)
+void ledSuit_rotateBodyPart(bodyPart bodyPart, direction direction, uint8_t update);
+// Rotates the colors of the whole suit in the given direction
+// Updates the LED strips only if (update != 0)
+void ledSuit_rotateAll(direction direction, uint8_t update);
 
 /*******************************************************************************
  * 																			   *
@@ -110,9 +129,29 @@ void ledSuit_enableBodyPartStrobe(bodyPart bodyPart, uint8_t enabled);
 void ledSuit_enableAllStrobe(uint8_t enabled);
 // Returns != 0 if the body parts strobe function is enabled and 0 if it is disabled
 uint8_t ledSuit_getBodyPartStrobeEnabledState(bodyPart bodyPart);
-// Sets the strobe toggle time in 10ms (starting with 0)
-void ledSuit_setStrobeToggleTime(uint8_t time);
-// Returns the strobe toggle time in 10ms (starting with 0)
-uint8_t ledSuit_getStrobeToggleTime(void);
+// Sets the strobe period in 2ms (starting with 0)
+void ledSuit_setStrobePeriod(uint8_t time);
+// Returns the strobe period in 2ms (starting with 0)
+uint8_t ledSuit_getStrobePeriod(void);
+
+// Enables (enabled != 0) or disables (enabled == 0) the auto rotate function of a body part
+void ledSuit_enableBodyPartAutoRotate(bodyPart bodyPart, uint8_t enabled);
+// Enables (enabled != 0) or disables (enabled == 0) the auto rotate function of the whole suit
+void ledSuit_enableAllAutoRotate(uint8_t enabled);
+// Returns != 0 if the body parts autoRotate function is enabled and 0 if it is disabled
+uint8_t ledSuit_getBodyPartAutoRotateEnabledState(bodyPart bodyPart);
+// Sets the auto rotate direction of a body part
+void LedSuit_setBodyPartAutoRotateDirection(bodyPart bodyPart, direction direction);
+// Sets the auto rotate direction of the whole suit
+void LedSuit_setAllAutoRotateDirection(direction direction);
+// Returns the auto rotate direction of a body part
+uint8_t ledSuit_getBodyPartAutoRotateDirection(bodyPart bodyPart);
+// Sets the auto rotate speed of a body part (255 = 500steps/s, 0 ~ 2steps/s)
+void LedSuit_setBodyPartAutoRotateSpeed(bodyPart bodyPart, uint8_t speed);
+// Sets the auto rotate speed of the whole suit (255 = 500steps/s, 0 ~ 2steps/s)
+void LedSuit_setAllAutoRotateSpeed(uint8_t speed);
+// Returns the auto rotate speed of a body part (255 = 500steps/s, 0 ~ 2steps/s)
+uint8_t ledSuit_getBodyPartAutoRotateSpeed(bodyPart bodyPart);
+
 
 #endif /* LIB_LEDSUIT_H_ */

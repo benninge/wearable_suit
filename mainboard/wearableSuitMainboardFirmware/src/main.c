@@ -22,25 +22,24 @@ void Delay(uint32_t time)
 
 int main(void)
 {
-	ledSuit_init();
+	SystemInit();
 
-	while (1)
-	{
-		ledSuit_colorBodyPart(leftArm, red, 1);
-		ledSuit_colorBodyPart(rightArm, green, 1);
-		ledSuit_colorBodyPart(leftLeg, blue, 1);
-		ledSuit_colorBodyPart(rightLeg, yellow, 1);
-		Delay(1000);
-		ledSuit_colorBodyPartRgb(leftArm, 50, 50, 50, 1);
-		ledSuit_colorBodyPartRgb(rightArm, 50, 50, 50, 0);
-		Delay(1000);
-		ledSuit_updateAll();
-		Delay(1000);
-		ledSuit_colorAll(white, 1);
-		Delay(1000);
-		ledSuit_enableAll(0, 1);
-		Delay(1000);
-		ledSuit_enableAll(1, 1);
-		Delay(1000);
-	}
+
+	ledSuit_init();
+	ledSuit_setAllBrightness(50, 0);
+
+	rgbLed colors[4] = {
+			{ .r = 255, .g = 0, .b = 0 },
+			{ .r = 0, .g = 255, .b = 0 },
+			{ .r = 0, .g = 0, .b = 255 },
+			{ .r = 255, .g = 0, .b = 0 } };
+
+	ledSuit_colorAllColorFade(4, colors, 1);
+
+	ledSuit_enableAllAutoRotate(1);
+	//ledSuit_enableAllStrobe(1);
+
+	while(1);
 }
+
+
