@@ -87,7 +87,7 @@ void rs485_init(uint32_t baudRate) {
 	// Initialize Interrupt
 	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
 
-	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -118,13 +118,13 @@ void USART2_IRQHandler(void){
 		/* check if the received character is not the LF character (used to determine end of string)
 		 * or the if the maximum string length has been been reached
 		 */
-		if( (t != '\n') && (cnt < MAX_STRLEN) ){
+		if( (t != '\3') && (cnt < MAX_STRLEN) ){
 			received_string[cnt] = t;
 			cnt++;
 		}
-		else{ // otherwise reset the character counter and print the received string
+		else{ // otherwise reset the character counter and analyze the received msg
 			cnt = 0;
-			USART_puts(USART2, received_string);
+			//TODO: analyze msg or set flag so it gets analyzed later
 		}
 	}
 }
