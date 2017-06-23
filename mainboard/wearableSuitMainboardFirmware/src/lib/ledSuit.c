@@ -6,7 +6,6 @@
  */
 
 #include "ledSuit.h"
-#include "ws2812.h"
 
 
 // Length of arms and legs
@@ -36,6 +35,7 @@ typedef struct
 	uint8_t enabled;
 	rgbLed leds[ARM_LENGTH];
 	uint8_t brightness;
+	uint8_t strobeEnabled;
 } arm;
 
 // Leg structure
@@ -44,6 +44,7 @@ typedef struct
 	uint8_t enabled;
 	rgbLed leds[LEG_LENGTH];
 	uint8_t brightness;
+	uint8_t strobeEnabled;
 } leg;
 
 
@@ -63,6 +64,7 @@ const rgbLed _colorLut[ledColorEnumSize] = {
 // Variables containing the LED suit status
 arm _leftArm, _rightArm;
 leg _leftLeg, _rightLeg;
+uint8_t _strobeToggleTime = 2; // in 10ms (starting with 0)
 
 
 // Writes the configuration in the _leftArm structure to the LED strip
@@ -152,6 +154,10 @@ void ledSuit_init(void)
 	ledSuit_enableAll(1, 0); // Enable all body parts, do not update the LED strips
 	ledSuit_colorAllRgb(0, 0, 0, 0); // Initialize all body parts with color (0, 0, 0), do not update the LED strips
 	ledSuit_setAllBrightness(255, 0); // Initialize the brightness of all body parts with 255
+	ledSuit_enableAllStrobe(0); // Initialize all body parts with strobe switched off
+
+	// Initialize system tick timer
+	SysTick_Config(SystemCoreClock/100); // system tick timer 1/100 second
 }
 
 // Writes the configuration of a body part to the LED strip
@@ -223,6 +229,84 @@ void ledSuit_enableAll(uint8_t enabled, uint8_t update)
 	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
 	{
 		ledSuit_enableBodyPart(i, enabled, update);
+	}
+}
+
+// Returns != 0 if the body part is enabled and 0 if it is disabled
+uint8_t ledSuit_getBodyPartEnabledState(bodyPart bodyPart)
+{
+	// Return body part enabled value
+	switch (bodyPart)
+	{
+	case leftArm:
+		return _leftArm.enabled;
+	case rightArm:
+		return _rightArm.enabled;
+	case leftLeg:
+		return _leftLeg.enabled;
+	case rightLeg:
+		return _rightLeg.enabled;
+	default:
+		return 0;
+	}
+}
+
+// Sets the brightness of a body part
+// Updates the LED strips only if (update != 0)
+void ledSuit_setBodyPartBrightness(bodyPart bodyPart, uint8_t brightness, uint8_t update)
+{
+	switch (bodyPart)
+	{
+	case leftArm:
+		_leftArm.brightness = brightness; // Update the brightness value in the _leftArm structure
+		break;
+	case rightArm:
+		_rightArm.brightness = brightness; // Update the brightness value in the _rightArm structure
+		break;
+	case leftLeg:
+		_leftLeg.brightness = brightness; // Update the brightness value in the _leftLeg structure
+		break;
+	case rightLeg:
+		_rightLeg.brightness = brightness; // Update the brightness value in the _rightLeg structure
+		break;
+	default:
+		return;
+	}
+
+	if (update)
+	{
+		// Write the configuration of the body part to the LED strip
+		ledSuit_updateBodyPart(bodyPart);
+	}
+}
+
+// Sets the brightness of the whole suit
+// Updates the LED strips only if (update != 0)
+void ledSuit_setAllBrightness(uint8_t brightness, uint8_t update)
+{
+	// Update the brightness of all body parts
+	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
+	{
+		ledSuit_setBodyPartBrightness(i, brightness, update);
+	}
+}
+
+// Returns the brightness of the body part
+uint8_t ledSuit_getBodyPartBrightness(bodyPart bodyPart)
+{
+	// Return body part brightness value
+	switch (bodyPart)
+	{
+	case leftArm:
+		return _leftArm.brightness;
+	case rightArm:
+		return _rightArm.brightness;
+	case leftLeg:
+		return _leftLeg.brightness;
+	case rightLeg:
+		return _rightLeg.brightness;
+	default:
+		return 0;
 	}
 }
 
@@ -304,42 +388,105 @@ void ledSuit_colorAll(ledColor color, uint8_t update)
 	ledSuit_colorAllRgb(_colorLut[color].r, _colorLut[color].g, _colorLut[color].b, update);
 }
 
-// Sets the brightness of a body part
+// Colors a body part with an rgbLed value
 // Updates the LED strips only if (update != 0)
-void ledSuit_setBodyPartBrightness(bodyPart bodyPart, uint8_t brightness, uint8_t update)
+void ledSuit_colorBodyPartRgbLed(bodyPart bodyPart, rgbLed rgb, uint8_t update)
+{
+	ledSuit_colorBodyPartRgb(bodyPart, rgb.r, rgb.g, rgb.b, update);
+}
+
+// Colors the whole suit with an rgbLed value
+// Updates the LED strips only if (update != 0)
+void ledSuit_colorAllRgbLed(rgbLed rgb, uint8_t update)
+{
+	ledSuit_colorAllRgb(rgb.r, rgb.g, rgb.b, update);
+}
+
+
+// Enables (enabled != 0) or disables (enabled == 0) the strobe function of a body part
+void ledSuit_enableBodyPartStrobe(bodyPart bodyPart, uint8_t enabled)
 {
 	switch (bodyPart)
 	{
 	case leftArm:
-		_leftArm.brightness = brightness; // Update the brightness value in the _leftArm structure
+		_leftArm.strobeEnabled = enabled; // Update the strobe enabled value in the _leftArm structure
 		break;
 	case rightArm:
-		_rightArm.brightness = brightness; // Update the brightness value in the _rightArm structure
+		_rightArm.strobeEnabled = enabled; // Update the strobe enabled value in the _rightArm structure
 		break;
 	case leftLeg:
-		_leftLeg.brightness = brightness; // Update the brightness value in the _leftLeg structure
+		_leftLeg.strobeEnabled = enabled; // Update the strobe enabled value in the _leftLeg structure
 		break;
 	case rightLeg:
-		_rightLeg.brightness = brightness; // Update the brightness value in the _rightLeg structure
+		_rightLeg.strobeEnabled = enabled; // Update the strobe enabled value in the _rightLeg structure
 		break;
 	default:
 		return;
 	}
+}
 
-	if (update)
+// Enables (enabled != 0) or disables (enabled == 0) the strobe function of the whole suit
+void ledSuit_enableAllStrobe(uint8_t enabled)
+{
+	// Update the strobe enabled value of all body parts
+	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
 	{
-		// Write the configuration of the body part to the LED strip
-		ledSuit_updateBodyPart(bodyPart);
+		ledSuit_enableBodyPartStrobe(i, enabled);
 	}
 }
 
-// Sets the brightness of the whole suit
-// Updates the LED strips only if (update != 0)
-void ledSuit_setAllBrightness(uint8_t brightness, uint8_t update)
+// Returns != 0 if the body parts strobe function is enabled and 0 if it is disabled
+uint8_t ledSuit_getBodyPartStrobeEnabledState(bodyPart bodyPart)
 {
-	// Update the brightness of all body parts
-	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
+	// Return body part strobe enabled value
+	switch (bodyPart)
 	{
-		ledSuit_setBodyPartBrightness(i, brightness, update);
+	case leftArm:
+		return _leftArm.strobeEnabled;
+	case rightArm:
+		return _rightArm.strobeEnabled;
+	case leftLeg:
+		return _leftLeg.strobeEnabled;
+	case rightLeg:
+		return _rightLeg.strobeEnabled;
+	default:
+		return 0;
 	}
+}
+
+// Sets the strobe toggle time in 10ms (starting with 0)
+void ledSuit_setStrobeToggleTime(uint8_t time)
+{
+	_strobeToggleTime = time;
+}
+
+// Returns the strobe toggle time in 10ms (starting with 0)
+uint8_t ledSuit_getStrobeToggleTime(void)
+{
+	return _strobeToggleTime;
+}
+
+
+// Executes all strobe action, should be called every 10ms
+void _strobe()
+{
+	static uint8_t strobeCounter = 0;
+	if (strobeCounter < _strobeToggleTime)
+	{
+		strobeCounter++; // Increment strobe counter
+	}
+	else
+	{
+		for (uint8_t i = 0; i < bodyPartEnumSize; i++)
+		{
+			ledSuit_enableBodyPart(i, !ledSuit_getBodyPartEnabledState(i), 1);
+		}
+		strobeCounter = 0; // Reset strobe counter
+	}
+}
+
+// System tick timer interrupt handler
+void SysTick_Handler(void)
+{
+	_strobe();
 }
