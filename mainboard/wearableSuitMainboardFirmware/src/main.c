@@ -12,6 +12,7 @@
 #include "stm32f4xx.h"
 
 #include "lib/ledSuit.h"
+#include "lib/rs485.h"
 
 
 void Delay(uint32_t time)
@@ -23,6 +24,7 @@ void Delay(uint32_t time)
 int main(void)
 {
 	ledSuit_init();
+	rs485_init(38400);
 
 	while (1)
 	{
