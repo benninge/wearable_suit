@@ -50,6 +50,9 @@ PERMISSION TO DISTRIBUTE
  or the use or other dealings in the software.
  */
 
+#define MAX_STRLEN 254
+volatile char received_string[MAX_STRLEN+1];
+
 const uint8_t STX = '\2';
 const uint8_t ETX = '\3';
 
@@ -57,29 +60,91 @@ void rs485_init(uint32_t baudRate) {
 	//TODO
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
 
-    RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
     // Configure USART2 TX
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_USART2);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_USART2);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_USART2);
     // Initialize USART
 	USART_InitStructure.USART_BaudRate = baudRate;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Tx;
+	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
 
 	USART_Init(USART2, &USART_InitStructure);
+
+	// Initialize Interrupt
+	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+
   /* Enable the USART */
 	USART_Cmd(USART2, ENABLE);
+}
+
+void USART_puts(USART_TypeDef* USARTx, volatile char *s){
+
+	while(*s){
+		// wait until data register is empty
+		while( !(USARTx->SR & 0x00000040) );
+		USART_SendData(USARTx, *s);
+		*s++;
+	}
+}
+
+void USART2_IRQHandler(void){
+
+	// check if the USART2 receive interrupt flag was set
+	if( USART_GetITStatus(USART2, USART_IT_RXNE) ){
+
+		static uint8_t cnt = 0; // this counter is used to determine the string length
+		char t = USART2->DR; // the character from the USART2 data register is saved in t
+
+		/* check if the received character is not the LF character (used to determine end of string)
+		 * or the if the maximum string length has been been reached
+		 */
+		if( (t != '\n') && (cnt < MAX_STRLEN) ){
+			received_string[cnt] = t;
+			cnt++;
+		}
+		else{ // otherwise reset the character counter and print the received string
+			cnt = 0;
+			USART_puts(USART2, received_string);
+		}
+	}
+}
+
+//rs485 callback functions
+void fWrite (const uint8_t content)
+{
+    USART_puts(USART2, content);
+}
+
+int fAvailable ()
+{
+    //TODO: remove
+	return 0;
+}
+
+int fRead ()
+{
+    //TODO: feed one byte at a time to analyze msg
+	return 0;
 }
 
 // calculate 8-bit CRC
@@ -214,3 +279,4 @@ uint8_t rs485_recvMsg (AvailableCallback fAvailable,   // return available count
 
   return 0;  // timeout
 } // end of recvMsg
+
