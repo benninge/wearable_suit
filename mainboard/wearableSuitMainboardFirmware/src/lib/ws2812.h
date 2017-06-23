@@ -12,11 +12,11 @@
 
 
 #define ENABLE_CHANNEL_1 // Enable ws2812 channel 1 on pin A6
-//#define ENABLE_CHANNEL_2 // Enable ws2812 channel 2 on pin A7
+#define ENABLE_CHANNEL_2 // Enable ws2812 channel 2 on pin A7
 //#define ENABLE_CHANNEL_3 // Enable ws2812 channel 3 on pin B0
 //#define ENABLE_CHANNEL_4 // Enable ws2812 channel 4 on pin B1
 
-#define LED_COUNT_CH1 6 // Number of LEDs in channel 1
+#define LED_COUNT_CH1 300 // Number of LEDs in channel 1
 #define LED_COUNT_CH2 6 // Number of LEDs in channel 2
 #define LED_COUNT_CH3 6 // Number of LEDs in channel 3
 #define LED_COUNT_CH4 6 // Number of LEDs in channel 4
@@ -34,8 +34,8 @@ typedef struct
 // Initializes the ws2812 (all LEDs switched off)
 void ws2812_init(void);
 
-// Updates a number of LEDs of a channel beginning at the start address
-void ws2812_updateLeds(uint8_t channel, uint16_t startAddress, uint16_t ledCount, rgbLed * ledData);
+// Sets a number of LEDs of a channel beginning at the start address
+void ws2812_setLeds(uint8_t channel, uint16_t startAddress, uint16_t ledCount, rgbLed * ledData);
 
 // Sets a number of LEDs of a channel to RGB value beginning at the start address
 void ws2812_setLedsRGB(uint8_t channel, uint16_t startAddress, uint16_t ledCount, uint8_t r, uint8_t g, uint8_t b);

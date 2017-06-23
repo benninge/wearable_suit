@@ -64,4 +64,11 @@ void ledSuit_colorBodyPart(bodyPart bodyPart, ledColor color, uint8_t update);
 // Updates the LED strips only if (update != 0)
 void ledSuit_colorAll(ledColor color, uint8_t update);
 
+// Sets the brightness of a body part
+// Updates the LED strips only if (update != 0)
+void ledSuit_setBodyPartBrightness(bodyPart bodyPart, uint8_t brightness, uint8_t update);
+// Sets the brightness of the whole suit
+// Updates the LED strips only if (update != 0)
+void ledSuit_setAllBrightness(uint8_t brightness, uint8_t update);
+
 #endif /* LIB_LEDSUIT_H_ */

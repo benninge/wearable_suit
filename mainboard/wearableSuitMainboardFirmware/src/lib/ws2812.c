@@ -16,7 +16,7 @@
 #define PWM_0_VALUE 42 // Length of an PWM pulse for a zero value
 #define PWM_1_VALUE 83 // Length of an PWM period for a one value
 
-#define RESET_CYCLES 50 // 50 * 1,25us = 62,5us reset pulse (must be at least 50us)
+#define RESET_CYCLES 150 // 150 * 1,25us = 187,5us reset pulse (must be at least 50us)
 #define DMA_BUFFER1_LENGTH (LED_COUNT_CH1 * 24 + RESET_CYCLES) // Length of the DMA buffer for channel 1
 #define DMA_BUFFER2_LENGTH (LED_COUNT_CH2 * 24 + RESET_CYCLES) // Length of the DMA buffer for channel 2
 #define DMA_BUFFER3_LENGTH (LED_COUNT_CH3 * 24 + RESET_CYCLES) // Length of the DMA buffer for channel 3
@@ -195,7 +195,7 @@ void ws2812_init(void)
 	dmaInitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; // 16 bit DMA data size
 	dmaInitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord; // 16 bit memory data size
 	dmaInitStructure.DMA_Mode = DMA_Mode_Circular; // Circular buffer mode
-	dmaInitStructure.DMA_Priority = DMA_Priority_High; // High DMA priority
+	//dmaInitStructure.DMA_Priority = DMA_Priority_High; // High DMA priority
 
 #ifdef ENABLE_CHANNEL_1
 	// Initialize DMA stream 4
@@ -242,8 +242,8 @@ void ws2812_init(void)
 	TIM_Cmd(TIM3, ENABLE);
 }
 
-// Updates a number of LEDs of a channel beginning at the start address
-void ws2812_updateLeds(uint8_t channel, uint16_t startAddress, uint16_t ledCount, rgbLed * ledData)
+// Sets a number of LEDs of a channel beginning at the start address
+void ws2812_setLeds(uint8_t channel, uint16_t startAddress, uint16_t ledCount, rgbLed * ledData)
 {
 	// Update dmaBuffer
 	for (uint16_t i = startAddress; i < startAddress + ledCount; i++)
@@ -294,7 +294,7 @@ void ws2812_setLedsRGB(uint8_t channel, uint16_t startAddress, uint16_t ledCount
 	rgbLed led = {.r = r, .g = g, .b = b};
 	for (uint16_t i = startAddress; i < startAddress + ledCount; i++)
 	{
-		ws2812_updateLeds(channel, i, 1, &led);
+		ws2812_setLeds(channel, i, 1, &led);
 	}
 }
 

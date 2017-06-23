@@ -10,38 +10,40 @@
 
 
 // Length of arms and legs
-#define ARM_LENGTH 2
-#define LEG_LENGTH 1
+#define ARM_LENGTH 10
+#define LEG_LENGTH 3
 // Length, channel and start index of the LED strips of the left arm
 #define LEFT_ARM_CHANNEL 1
 #define LEFT_ARM_START 0
 #define LEFT_ARM_LENGTH ARM_LENGTH
 // Length, channel and start index of the LED strips of the right arm
 #define RIGHT_ARM_CHANNEL 1
-#define RIGHT_ARM_START 3
+#define RIGHT_ARM_START 10
 #define RIGHT_ARM_LENGTH ARM_LENGTH
 // Length, channel and start index of the LED strips of the left leg
-#define LEFT_LEG_CHANNEL 1
-#define LEFT_LEG_START 2
+#define LEFT_LEG_CHANNEL 2
+#define LEFT_LEG_START 0
 #define LEFT_LEG_LENGTH LEG_LENGTH
 // Length, channel and start index of the LED strips of the right leg
-#define RIGHT_LEG_CHANNEL 1
-#define RIGHT_LEG_START 5
+#define RIGHT_LEG_CHANNEL 2
+#define RIGHT_LEG_START 3
 #define RIGHT_LEG_LENGTH LEG_LENGTH
 
 
 // Arm structure
 typedef struct
 {
-	rgbLed leds[ARM_LENGTH];
 	uint8_t enabled;
+	rgbLed leds[ARM_LENGTH];
+	uint8_t brightness;
 } arm;
 
 // Leg structure
 typedef struct
 {
-	rgbLed leds[LEG_LENGTH];
 	uint8_t enabled;
+	rgbLed leds[LEG_LENGTH];
+	uint8_t brightness;
 } leg;
 
 
@@ -68,11 +70,17 @@ void _updateLeftArm()
 {
 	if (_leftArm.enabled)
 	{
-		ws2812_updateLeds(LEFT_ARM_CHANNEL, LEFT_ARM_START, LEFT_ARM_LENGTH, _leftArm.leds);
+		for (uint16_t i = 0; i < LEFT_ARM_LENGTH; i++)
+		{
+			uint8_t red = (uint16_t)_leftArm.leds[i].r * _leftArm.brightness / 255;
+			uint8_t green = (uint16_t)_leftArm.leds[i].g * _leftArm.brightness / 255;
+			uint8_t blue = (uint16_t)_leftArm.leds[i].b * _leftArm.brightness / 255;
+			ws2812_setLedsRGB(LEFT_ARM_CHANNEL, LEFT_ARM_START + i, 1, red, green, blue);
+		}
 	}
 	else
 	{
-		ws2812_switchLedsOff(LEFT_ARM_CHANNEL, LEFT_ARM_START, LEFT_ARM_LENGTH);
+		ws2812_switchLedsOff(LEFT_ARM_CHANNEL, LEFT_ARM_START, LEFT_ARM_LENGTH); // switch left arm LEDs off
 	}
 }
 
@@ -81,11 +89,17 @@ void _updateRightArm()
 {
 	if (_rightArm.enabled)
 	{
-		ws2812_updateLeds(RIGHT_ARM_CHANNEL, RIGHT_ARM_START, RIGHT_ARM_LENGTH, _rightArm.leds);
+		for (uint16_t i = 0; i < RIGHT_ARM_LENGTH; i++)
+		{
+			uint8_t red = (uint16_t)_rightArm.leds[i].r * _rightArm.brightness / 255;
+			uint8_t green = (uint16_t)_rightArm.leds[i].g * _rightArm.brightness / 255;
+			uint8_t blue = (uint16_t)_rightArm.leds[i].b * _rightArm.brightness / 255;
+			ws2812_setLedsRGB(RIGHT_ARM_CHANNEL, RIGHT_ARM_START + i, 1, red, green, blue);
+		}
 	}
 	else
 	{
-		ws2812_switchLedsOff(RIGHT_ARM_CHANNEL, RIGHT_ARM_START, RIGHT_ARM_LENGTH);
+		ws2812_switchLedsOff(RIGHT_ARM_CHANNEL, RIGHT_ARM_START, RIGHT_ARM_LENGTH); // switch right arm LEDs off
 	}
 }
 
@@ -94,11 +108,17 @@ void _updateLeftLeg()
 {
 	if (_leftLeg.enabled)
 	{
-		ws2812_updateLeds(LEFT_LEG_CHANNEL, LEFT_LEG_START, LEFT_LEG_LENGTH, _leftLeg.leds);
+		for (uint16_t i = 0; i < LEFT_LEG_LENGTH; i++)
+		{
+			uint8_t red = (uint16_t)_leftLeg.leds[i].r * _leftLeg.brightness / 255;
+			uint8_t green = (uint16_t)_leftLeg.leds[i].g * _leftLeg.brightness / 255;
+			uint8_t blue = (uint16_t)_leftLeg.leds[i].b * _leftLeg.brightness / 255;
+			ws2812_setLedsRGB(LEFT_LEG_CHANNEL, LEFT_LEG_START + i, 1, red, green, blue);
+		}
 	}
 	else
 	{
-		ws2812_switchLedsOff(LEFT_LEG_CHANNEL, LEFT_LEG_START, LEFT_LEG_LENGTH);
+		ws2812_switchLedsOff(LEFT_LEG_CHANNEL, LEFT_LEG_START, LEFT_LEG_LENGTH); // switch left leg LEDs off
 	}
 }
 
@@ -107,11 +127,17 @@ void _updateRightLeg()
 {
 	if (_rightLeg.enabled)
 	{
-		ws2812_updateLeds(RIGHT_LEG_CHANNEL, RIGHT_LEG_START, RIGHT_LEG_LENGTH, _rightLeg.leds);
+		for (uint16_t i = 0; i < RIGHT_LEG_LENGTH; i++)
+		{
+			uint8_t red = (uint16_t)_rightLeg.leds[i].r * _rightLeg.brightness / 255;
+			uint8_t green = (uint16_t)_rightLeg.leds[i].g * _rightLeg.brightness / 255;
+			uint8_t blue = (uint16_t)_rightLeg.leds[i].b * _rightLeg.brightness / 255;
+			ws2812_setLedsRGB(RIGHT_LEG_CHANNEL, RIGHT_LEG_START + i, 1, red, green, blue);
+		}
 	}
 	else
 	{
-		ws2812_switchLedsOff(RIGHT_LEG_CHANNEL, RIGHT_LEG_START, RIGHT_LEG_LENGTH);
+		ws2812_switchLedsOff(RIGHT_LEG_CHANNEL, RIGHT_LEG_START, RIGHT_LEG_LENGTH);  // switch right leg LEDs off
 	}
 }
 
@@ -125,6 +151,7 @@ void ledSuit_init(void)
 	// Initialize suit
 	ledSuit_enableAll(1, 0); // Enable all body parts, do not update the LED strips
 	ledSuit_colorAllRgb(0, 0, 0, 0); // Initialize all body parts with color (0, 0, 0), do not update the LED strips
+	ledSuit_setAllBrightness(255, 0); // Initialize the brightness of all body parts with 255
 }
 
 // Writes the configuration of a body part to the LED strip
@@ -153,7 +180,7 @@ void ledSuit_updateBodyPart(bodyPart bodyPart)
 void ledSuit_updateAll(void)
 {
 	// Update all body parts
-	for (int i = 0; i < bodyPartEnumSize; i++)
+	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
 	{
 		ledSuit_updateBodyPart(i);
 	}
@@ -193,7 +220,7 @@ void ledSuit_enableBodyPart(bodyPart bodyPart, uint8_t enabled, uint8_t update)
 void ledSuit_enableAll(uint8_t enabled, uint8_t update)
 {
 	// Enable or disable all body parts
-	for (int i = 0; i < bodyPartEnumSize; i++)
+	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
 	{
 		ledSuit_enableBodyPart(i, enabled, update);
 	}
@@ -207,7 +234,7 @@ void ledSuit_colorBodyPartRgb(bodyPart bodyPart, uint8_t red, uint8_t green, uin
 	{
 	case leftArm:
 		// Update the color values in the _leftArm structure
-		for (int i = 0; i < LEFT_ARM_LENGTH; i++)
+		for (uint16_t i = 0; i < LEFT_ARM_LENGTH; i++)
 		{
 			_leftArm.leds[i].r = red;
 			_leftArm.leds[i].g = green;
@@ -216,7 +243,7 @@ void ledSuit_colorBodyPartRgb(bodyPart bodyPart, uint8_t red, uint8_t green, uin
 		break;
 	case rightArm:
 		// Update the color values in the _rightArm structure
-		for (int i = 0; i < RIGHT_ARM_LENGTH; i++)
+		for (uint16_t i = 0; i < RIGHT_ARM_LENGTH; i++)
 		{
 			_rightArm.leds[i].r = red;
 			_rightArm.leds[i].g = green;
@@ -225,7 +252,7 @@ void ledSuit_colorBodyPartRgb(bodyPart bodyPart, uint8_t red, uint8_t green, uin
 		break;
 	case leftLeg:
 		// Update the color values in the _leftLeg structure
-		for (int i = 0; i < LEFT_LEG_LENGTH; i++)
+		for (uint16_t i = 0; i < LEFT_LEG_LENGTH; i++)
 		{
 			_leftLeg.leds[i].r = red;
 			_leftLeg.leds[i].g = green;
@@ -234,7 +261,7 @@ void ledSuit_colorBodyPartRgb(bodyPart bodyPart, uint8_t red, uint8_t green, uin
 		break;
 	case rightLeg:
 		// Update the color values in the _rightLeg structure
-		for (int i = 0; i < RIGHT_LEG_LENGTH; i++)
+		for (uint16_t i = 0; i < RIGHT_LEG_LENGTH; i++)
 		{
 			_rightLeg.leds[i].r = red;
 			_rightLeg.leds[i].g = green;
@@ -257,7 +284,7 @@ void ledSuit_colorBodyPartRgb(bodyPart bodyPart, uint8_t red, uint8_t green, uin
 void ledSuit_colorAllRgb(uint8_t red, uint8_t green, uint8_t blue, uint8_t update)
 {
 	// Color all body parts
-	for (int i = 0; i < bodyPartEnumSize; i++)
+	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
 	{
 		ledSuit_colorBodyPartRgb(i, red, green, blue, update);
 	}
@@ -275,4 +302,44 @@ void ledSuit_colorBodyPart(bodyPart bodyPart, ledColor color, uint8_t update)
 void ledSuit_colorAll(ledColor color, uint8_t update)
 {
 	ledSuit_colorAllRgb(_colorLut[color].r, _colorLut[color].g, _colorLut[color].b, update);
+}
+
+// Sets the brightness of a body part
+// Updates the LED strips only if (update != 0)
+void ledSuit_setBodyPartBrightness(bodyPart bodyPart, uint8_t brightness, uint8_t update)
+{
+	switch (bodyPart)
+	{
+	case leftArm:
+		_leftArm.brightness = brightness; // Update the brightness value in the _leftArm structure
+		break;
+	case rightArm:
+		_rightArm.brightness = brightness; // Update the brightness value in the _rightArm structure
+		break;
+	case leftLeg:
+		_leftLeg.brightness = brightness; // Update the brightness value in the _leftLeg structure
+		break;
+	case rightLeg:
+		_rightLeg.brightness = brightness; // Update the brightness value in the _rightLeg structure
+		break;
+	default:
+		return;
+	}
+
+	if (update)
+	{
+		// Write the configuration of the body part to the LED strip
+		ledSuit_updateBodyPart(bodyPart);
+	}
+}
+
+// Sets the brightness of the whole suit
+// Updates the LED strips only if (update != 0)
+void ledSuit_setAllBrightness(uint8_t brightness, uint8_t update)
+{
+	// Update the brightness of all body parts
+	for (uint8_t i = 0; i < bodyPartEnumSize; i++)
+	{
+		ledSuit_setBodyPartBrightness(i, brightness, update);
+	}
 }
