@@ -248,36 +248,36 @@ void ws2812_setLeds(uint8_t channel, uint16_t startAddress, uint16_t ledCount, r
 	// Update dmaBuffer
 	for (uint16_t i = startAddress; i < startAddress + ledCount; i++)
 	{
-		for (uint8_t j = 0; j < 8; j++)
+		for (uint8_t j = 0; j < 8; j++) // Loop through every bit  (ws2812 colors are send grb, not rgb)
 		{
 			switch (channel)
 			{
 #ifdef ENABLE_CHANNEL_1
 			case 1:
-				dmaBuffer1[i * 24 + j + 8] = (ledData->r & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer1[i * 24 + j] = (ledData->g & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer1[i * 24 + j + 16] = (ledData->b & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer1[i * 24 + j + 8] = (ledData->r & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer1[i * 24 + j] = (ledData->g & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer1[i * 24 + j + 16] = (ledData->b & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
 				break;
 #endif
 #ifdef ENABLE_CHANNEL_2
 			case 2:
-				dmaBuffer2[i * 24 + j + 8] = (ledData->r & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer2[i * 24 + j] = (ledData->g & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer2[i * 24 + j + 16] = (ledData->b & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer2[i * 24 + j + 8] = (ledData->r & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer2[i * 24 + j] = (ledData->g & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer2[i * 24 + j + 16] = (ledData->b & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
 				break;
 #endif
 #ifdef ENABLE_CHANNEL_3
 			case 3:
-				dmaBuffer3[i * 24 + j + 8] = (ledData->r & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer3[i * 24 + j] = (ledData->g & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer3[i * 24 + j + 16] = (ledData->b & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer3[i * 24 + j + 8] = (ledData->r & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer3[i * 24 + j] = (ledData->g & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer3[i * 24 + j + 16] = (ledData->b & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
 				break;
 #endif
 #ifdef ENABLE_CHANNEL_4
 			case 4:
-				dmaBuffer4[i * 24 + j + 8] = (ledData->r & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer4[i * 24 + j] = (ledData->g & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
-				dmaBuffer4[i * 24 + j + 16] = (ledData->b & (1 << j)) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer4[i * 24 + j + 8] = (ledData->r & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer4[i * 24 + j] = (ledData->g & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
+				dmaBuffer4[i * 24 + j + 16] = (ledData->b & (1 << (7 - j))) ? PWM_1_VALUE : PWM_0_VALUE;
 				break;
 #endif
 			default:
@@ -302,16 +302,16 @@ void ws2812_setLedsRGB(uint8_t channel, uint16_t startAddress, uint16_t ledCount
 void ws2812_setAllLedsRGB(uint8_t r, uint8_t g, uint8_t b)
 {
 #ifdef ENABLE_CHANNEL_1
-	ws2812_setLedsRGB(0, 0, LED_COUNT_CH1, r, g, b);
+	ws2812_setLedsRGB(0, 0, LED_COUNT_CH1, r, g, b); // Set LEDs of channel 1
 #endif
 #ifdef ENABLE_CHANNEL_2
-	ws2812_setLedsRGB(1, 0, LED_COUNT_CH2, r, g, b);
+	ws2812_setLedsRGB(1, 0, LED_COUNT_CH2, r, g, b); // Set LEDs of channel 2
 #endif
 #ifdef ENABLE_CHANNEL_3
-	ws2812_setLedsRGB(2, 0, LED_COUNT_CH3, r, g, b);
+	ws2812_setLedsRGB(2, 0, LED_COUNT_CH3, r, g, b); // Set LEDs of channel 3
 #endif
 #ifdef ENABLE_CHANNEL_4
-	ws2812_setLedsRGB(3, 0, LED_COUNT_CH4, r, g, b);
+	ws2812_setLedsRGB(3, 0, LED_COUNT_CH4, r, g, b); // Set LEDs of channel 4
 #endif
 }
 
