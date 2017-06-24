@@ -51,19 +51,21 @@ PERMISSION TO DISTRIBUTE
  */
 
 #define MAX_STRLEN 254
-volatile char received_string[MAX_STRLEN+1];
+volatile uint8_t received_string[MAX_STRLEN+1];
 
 const uint8_t STX = '\2';
 const uint8_t ETX = '\3';
 
 void rs485_init(uint32_t baudRate) {
-	//TODO
+
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 
+	// Set Clocks
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+
     // Configure USART2 TX
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -72,21 +74,21 @@ void rs485_init(uint32_t baudRate) {
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+    // Set Pins
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_USART2);
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_USART2);
-    // Initialize USART
+
+    // USART Config
 	USART_InitStructure.USART_BaudRate = baudRate;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
 	USART_InitStructure.USART_Parity = USART_Parity_No;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-
 	USART_Init(USART2, &USART_InitStructure);
 
 	// Initialize Interrupt
 	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
@@ -97,7 +99,7 @@ void rs485_init(uint32_t baudRate) {
 	USART_Cmd(USART2, ENABLE);
 }
 
-void USART_puts(USART_TypeDef* USARTx, volatile char *s){
+void USART_puts(USART_TypeDef* USARTx, volatile uint8_t *s){
 
 	while(*s){
 		// wait until data register is empty
@@ -129,22 +131,10 @@ void USART2_IRQHandler(void){
 	}
 }
 
-//rs485 callback functions
+//rs485 callback function
 void fWrite (const uint8_t content)
 {
     USART_puts(USART2, content);
-}
-
-int fAvailable ()
-{
-    //TODO: remove
-	return 0;
-}
-
-int fRead ()
-{
-    //TODO: feed one byte at a time to analyze msg
-	return 0;
 }
 
 // calculate 8-bit CRC
@@ -194,29 +184,24 @@ void rs485_sendMsg (WriteCallback fSend, const uint8_t * data, const uint8_t len
   sendComplemented (fSend, crc8 (data, length));
 }  // end of sendMsg
 
-// receive a message, maximum "length" uint8_ts, timeout after "timeout" milliseconds
+// receive a message, maximum "length" uint8_ts
 // if nothing received, or an error (eg. bad CRC, bad data) return 0
 // otherwise, returns length of received data
-uint8_t rs485_recvMsg (AvailableCallback fAvailable,   // return available count
-              ReadCallback fRead,             // read one uint8_t
+uint8_t rs485_recvMsg (
               uint8_t * data,                    // buffer to receive into
               const uint8_t length,              // maximum buffer size
               unsigned long timeout)          // milliseconds before timing out
   {
 
-  unsigned long start_time = 0; //TODO: millis() equivalent here
   bool have_stx = false;
-  // variables below are set when we get an STX
   bool have_etx;
   uint8_t input_pos;
   bool first_nibble;
   uint8_t current_uint8_t;
 
-  while (millis () - start_time < timeout)
+  for (int i = 0; i < MAX_STRLEN; i++)
     {
-    if (fAvailable () > 0)
-      {
-      uint8_t inuint8_t = fRead ();
+      uint8_t inuint8_t = received_string[i];
 
       switch (inuint8_t)
         {
@@ -226,7 +211,6 @@ uint8_t rs485_recvMsg (AvailableCallback fAvailable,   // return available count
           have_etx = false;
           input_pos = 0;
           first_nibble = true;
-          start_time = millis ();  // reset timeout period
           break;
 
         case '\3':   // end of text
@@ -274,8 +258,7 @@ uint8_t rs485_recvMsg (AvailableCallback fAvailable,   // return available count
           break;
 
         }  // end of switch
-      }  // end of incoming data
-    } // end of while not timed out
+    } // end of while
 
   return 0;  // timeout
 } // end of recvMsg

@@ -20,7 +20,7 @@ typedef int  (*ReadCallback)  ();    // read a byte from serial port
 void rs485_init(uint32_t baudRate);
 void rs485_sendMsg (WriteCallback fSend,
               const uint8_t * data, const uint8_t length);
-uint8_t rs485_recvMsg (AvailableCallback fAvailable, ReadCallback fRead,
+uint8_t rs485_recvMsg (
               uint8_t * data, const uint8_t length,
               unsigned long timeout);
 
