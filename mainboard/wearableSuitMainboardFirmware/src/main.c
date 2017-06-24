@@ -40,7 +40,10 @@ int main(void)
 	ledSuit_enableAllAutoRotate(1);
 	//ledSuit_enableAllStrobe(1);
 
-	while(1);
+	while(1) {
+		//rs485_requestSensorData(leftArmSensor);
+		//Delay(100);
+	}
 }
 
 

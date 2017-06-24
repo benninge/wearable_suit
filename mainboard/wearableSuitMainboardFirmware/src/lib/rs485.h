@@ -13,15 +13,20 @@
 #include "stm32f4xx_usart.h"
 #include <stdint.h>
 
-typedef void (*WriteCallback)  (const uint8_t content);    // send a byte to serial port
-typedef int  (*AvailableCallback)  ();    // return number of bytes available
-typedef int  (*ReadCallback)  ();    // read a byte from serial port
+typedef enum
+{
+	leftArmSensor,
+	rightArmSensor,
+	leftLegSensor,
+	rightLegSensor,
+	sensorPartEnumSize // Used to determine enum size
+} sensorPart;
 
 void rs485_init(uint32_t baudRate);
-void rs485_sendMsg (WriteCallback fSend,
-              const uint8_t * data, const uint8_t length);
+void rs485_sendMsg (const uint8_t * data, const uint8_t length);
 uint8_t rs485_recvMsg (
               uint8_t * data, const uint8_t length,
               unsigned long timeout);
+void rs485_requestSensorData(sensorPart sensor);
 
 #endif /* LIB_RS485_H_ */
