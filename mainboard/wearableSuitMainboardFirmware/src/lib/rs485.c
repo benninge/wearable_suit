@@ -79,20 +79,20 @@ void rs485_init(uint32_t baudRate) {
 
 
 	// Set Clocks
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
 
-    // Configure USART2 TX/RX
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
+    // Configure USART1 TX/RX
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
 
     // Set Pins
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_USART2);
-	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_USART2);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
 
     // USART Config
 	USART_InitStructure.USART_BaudRate = baudRate;
@@ -101,28 +101,28 @@ void rs485_init(uint32_t baudRate) {
 	USART_InitStructure.USART_Parity = USART_Parity_No;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-	USART_Init(USART2, &USART_InitStructure);
+	USART_Init(USART1, &USART_InitStructure);
 
 	// Initialize Interrupt
-	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
-	NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
   /* Enable the USART */
-	USART_Cmd(USART2, ENABLE);
+	USART_Cmd(USART1, ENABLE);
 
 	// Setup Enable pin
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-    GPIO_ResetBits(GPIOA, GPIO_Pin_4);
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_ResetBits(GPIOB, GPIO_Pin_5);
 }
 
 void USART_puts(USART_TypeDef* USARTx, volatile uint8_t *s){
@@ -145,12 +145,12 @@ uint8_t c;
   // first nibble
   c = what >> 4;
   uint8_t send1 = (c << 4) | (c ^ 0x0F);
-  USART_puts(USART2,&send1 );
+  USART_puts(USART1,&send1 );
 
   // second nibble
   c = what & 0x0F;
   uint8_t send2 = (c << 4) | (c ^ 0x0F);
-  USART_puts(USART2,&send2 );
+  USART_puts(USART1,&send2 );
 
 }  // end of sendComplemented
 
@@ -181,10 +181,10 @@ void rs485_sendMsg (const uint8_t * data, const uint8_t length)
 	uint8_t STX = '\2';
 	uint8_t ETX = '\3';
 
-	USART_puts(USART2, &STX );
+	USART_puts(USART1, &STX );
 	for (uint8_t i = 0; i < length; i++)
 		sendComplemented (data [i]);
-	USART_puts(USART2, &ETX );
+	USART_puts(USART1, &ETX );
 	sendComplemented (crc8 (data, length));
 }  // end of sendMsg
 
@@ -192,7 +192,7 @@ void rs485_requestSensorData(sensorPart sensor) {
 	uint8_t msg[2];
 
 	//Enable sending
-	GPIO_SetBits(GPIOA, GPIO_Pin_4);
+	GPIO_SetBits(GPIOB, GPIO_Pin_5);
 
 	switch (sensor) {
 
@@ -221,17 +221,17 @@ void rs485_requestSensorData(sensorPart sensor) {
 
 	}
 	//Disable sending
-	GPIO_ResetBits(GPIOA, GPIO_Pin_4);
+	GPIO_ResetBits(GPIOB, GPIO_Pin_5);
 }
 
 
-void USART2_IRQHandler(void){
+void USART1_IRQHandler(void){
 
-	// check if the USART2 receive interrupt flag was set
-	if( USART_GetITStatus(USART2, USART_IT_RXNE) ){
+	// check if the USART1 receive interrupt flag was set
+	if( USART_GetITStatus(USART1, USART_IT_RXNE) ){
 
 		static uint8_t cnt = 0; // this counter is used to determine the string length
-		char t = USART2->DR; // the character from the USART2 data register is saved in t
+		char t = USART1->DR; // the character from the USART1 data register is saved in t
 
 		/* check if the received character is not the LF character (used to determine end of string)
 		 * or the if the maximum string length has been been reached
