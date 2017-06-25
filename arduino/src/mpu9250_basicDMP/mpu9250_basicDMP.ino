@@ -3,7 +3,7 @@
 #include "I2Cdev.h"
 #include "RS485_protocol.h"
 
-#define DMP_DEBUG
+//#define DMP_DEBUG
 
 const byte ENABLE_PIN = 7;
 const byte SLAVE_ID = 1;
@@ -59,17 +59,17 @@ void loop() {
 
     byte buffer [10];
 
-    byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer), 50);
+    //byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer), 50);
 
-    if (received != 0)
+    if (true)
     //if (false)
       {
-      if (buffer [0] != SLAVE_ID)
-        return;  // not my device
+      //if (buffer [0] != SLAVE_ID)
+      //  return;  // not my device
 
       //TODO: remove
-      if (buffer [1] != 2)
-        return;  // unknown command
+      //if (buffer [1] != 2)
+      //  return;  // unknown command
 
 
       ypr0.f = mympu.ypr[0];
@@ -129,6 +129,7 @@ void loop() {
       sendMsg (fWrite, msg, sizeof msg);
       Serial.flush();
       digitalWrite (ENABLE_PIN, LOW);  // disable sending
+      delay (1000);
 
      }
 

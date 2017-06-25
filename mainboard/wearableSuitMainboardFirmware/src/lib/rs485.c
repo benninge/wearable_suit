@@ -83,7 +83,7 @@ void rs485_init(uint32_t baudRate) {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
 
     // Configure USART2 TX/RX
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -116,13 +116,13 @@ void rs485_init(uint32_t baudRate) {
 	USART_Cmd(USART2, ENABLE);
 
 	// Setup Enable pin
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-    GPIO_SetBits(GPIOA, GPIO_Pin_8);
+    GPIO_ResetBits(GPIOA, GPIO_Pin_4);
 }
 
 void USART_puts(USART_TypeDef* USARTx, volatile uint8_t *s){
@@ -192,7 +192,7 @@ void rs485_requestSensorData(sensorPart sensor) {
 	uint8_t msg[2];
 
 	//Enable sending
-	GPIO_SetBits(GPIOA, GPIO_Pin_8);
+	GPIO_SetBits(GPIOA, GPIO_Pin_4);
 
 	switch (sensor) {
 
@@ -221,7 +221,7 @@ void rs485_requestSensorData(sensorPart sensor) {
 
 	}
 	//Disable sending
-	GPIO_ResetBits(GPIOA, GPIO_Pin_8);
+	GPIO_ResetBits(GPIOA, GPIO_Pin_4);
 }
 
 

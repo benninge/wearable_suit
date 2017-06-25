@@ -1,6 +1,6 @@
 #include "RS485_protocol.h"
 
-const byte ENABLE_PIN = 4;
+const byte ENABLE_PIN = 7;
 const byte SLAVE_ID = 1;
 
   void fWrite (const byte content)
@@ -28,15 +28,15 @@ void loop()
 {
   byte buffer [10];
 
-  byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer));
+  //byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer));
 
-  if (received != 0)
+  if (true)
     {
-    if (buffer [0] != SLAVE_ID)
-      return;  // not my device
+    //if (buffer [0] != SLAVE_ID)
+    //  return;  // not my device
 
-    if (buffer [1] != 2)
-      return;  // unknown command
+    //if (buffer [1] != 2)
+    //  return;  // unknown command
 
     byte msg [] = {
        0,  // device 0 (master)
@@ -48,7 +48,7 @@ void loop()
     sendMsg (fWrite, msg, sizeof msg);
     Serial.flush();
     digitalWrite (ENABLE_PIN, LOW);  // disable sending
-
+    delay (1000);
    }
 
 }
