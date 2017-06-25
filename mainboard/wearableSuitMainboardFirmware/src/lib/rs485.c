@@ -231,12 +231,12 @@ void USART1_IRQHandler(void){
 	if( USART_GetITStatus(USART1, USART_IT_RXNE) ){
 
 		static uint8_t cnt = 0; // this counter is used to determine the string length
-		uint8_t t = USART1->DR; // the character from the USART1 data register is saved in t
+		char t = USART1->DR; // the character from the USART1 data register is saved in t
 
 		/* check if the received character is not the LF character (used to determine end of string)
 		 * or the if the maximum string length has been been reached
 		 */
-
+		//TODO: change to recognize STX ETX and CRC
 		if( (cnt < MAX_STRLEN) ){
 			received_string[cnt] = t;
 			cnt++;
