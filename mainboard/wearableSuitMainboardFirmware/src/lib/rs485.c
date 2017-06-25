@@ -231,26 +231,29 @@ void USART1_IRQHandler(void){
 	if( USART_GetITStatus(USART1, USART_IT_RXNE) ){
 
 		static uint8_t cnt = 0; // this counter is used to determine the string length
-		char t = USART1->DR; // the character from the USART1 data register is saved in t
+		uint8_t t = USART1->DR; // the character from the USART1 data register is saved in t
 
 		/* check if the received character is not the LF character (used to determine end of string)
 		 * or the if the maximum string length has been been reached
 		 */
-		if( (t != '\3') && (cnt < MAX_STRLEN) ){
+
+		if( (cnt < MAX_STRLEN) ){
 			received_string[cnt] = t;
 			cnt++;
 		}
 		else{ // otherwise reset the character counter and analyze the received msg
 			cnt = 0;
 			uint8_t error;
-			error = rs485_recvMsg(decoded_string, MAX_STRLEN+1, TIMEOUT);
+			error = rs485_recvMsg(decoded_string, 100, TIMEOUT);
 			if (error == 0) {
 				//TODO: if debug: print error
 			}
 			else {
 				//TODO: adapt for up to 4 bodyparts
-		         for ( int i=0; i < sizeof(float); i++ )
+		         for ( int i=0; i < sizeof(float); i++ ) {
 		        	 Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
+		         }
+		         float debugypr0 = Sensor_arm_left.ypr0.f;
 		         for ( int i=0; i < sizeof(float); i++ )
 		        	 Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
 		         for ( int i=0; i < sizeof(float); i++ )
@@ -268,8 +271,8 @@ void USART1_IRQHandler(void){
 		         for ( int i=0; i < sizeof(float); i++ )
 		        	 Sensor_arm_left.accel2.b[i] = decoded_string[24+2+8+i];
 			}
-
 		}
+		USART_ClearFlag(USART1, USART_IT_RXNE);
 	}
 }
 
@@ -289,7 +292,7 @@ uint8_t rs485_recvMsg (
   bool first_nibble;
   uint8_t current_uint8_t;
 
-  for (int i = 0; i < MAX_STRLEN; i++)
+  for (int i = 0; i < MAX_STRLEN+1; i++)
     {
       uint8_t inuint8_t = received_string[i];
 
@@ -349,7 +352,5 @@ uint8_t rs485_recvMsg (
 
         }  // end of switch
     } // end of while
-
-  return 0;  // timeout
 } // end of recvMsg
 

@@ -18,7 +18,7 @@
 void Delay(uint32_t time)
 {
 	time *= 10000;
-while(time--);
+	while(time--);
 }
 
 int main(void)
