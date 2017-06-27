@@ -25,20 +25,34 @@ int main(void)
 {
 	SystemInit();
 
-
 	ledSuit_init();
 	rs485_init(38400);
 
-	rgbLed colors[4] = {
-			{ .r = 255, .g = 0, .b = 0 },
-			{ .r = 0, .g = 255, .b = 0 },
-			{ .r = 0, .g = 0, .b = 255 },
-			{ .r = 255, .g = 0, .b = 0 } };
+	rgbLed fadeColors[4] = {
+				{ .r = 255, .g = 0, .b = 0 },
+				{ .r = 0, .g = 255, .b = 0 },
+				{ .r = 0, .g = 0, .b = 255 },
+				{ .r = 255, .g = 0, .b = 0 } };
 
-	ledSuit_colorAllColorFade(4, colors, 1);
+	rgbLed pulseColors[5] = {
+				{ .r = 10, .g = 0, .b = 0 },
+				{ .r = 50, .g = 0, .b = 0 },
+				{ .r = 255, .g = 0, .b = 0 },
+				{ .r = 50, .g = 0, .b = 0 },
+				{ .r = 10, .g = 0, .b = 0 } };
 
-	ledSuit_enableAllAutoRotate(1);
-	//ledSuit_enableAllStrobe(1);
+	ledSuit_color(LEFT_LEG, 0, 0, white, 1);
+	ledSuit_setStrobePeriod(1);
+	ledSuit_enableStrobe(LEFT_LEG, 1);
+
+	ledSuit_configureAutoColorFade(RIGHT_LEG, 3, fadeColors, 255);
+	ledSuit_enableAutoColorFade(RIGHT_LEG, 1);
+
+	ledSuit_colorFade(RIGHT_ARM, 4, fadeColors, 1);
+	ledSuit_color(LEFT_ARM, 0, 0, black, 0);
+	ledSut_colorArray(LEFT_ARM, 0, 5, pulseColors, 1);
+	ledSuit_configureAutoRotate(RIGHT_ARM + LEFT_ARM, forwards, 255);
+	ledSuit_enableAutoRotate(RIGHT_ARM + LEFT_ARM, 1);
 
 	while(1) {
 		//rs485_requestSensorData(leftArmSensor);
