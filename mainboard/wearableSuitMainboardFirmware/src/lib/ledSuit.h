@@ -99,7 +99,7 @@ void ledSuit_Shift(uint8_t bodyPart, direction direction, rgbLed shiftColor, uin
 void ledSuit_enableStrobe(uint8_t bodyPart, uint8_t enabled);
 // Returns the enabled state (enabled != 0) of the body parts strobe function (for multiple body parts, the first in the list above is selected)
 uint8_t ledSuit_getStrobeEnabledState(uint8_t bodyPart);
-// Sets the strobe period in 20ms (starting with 0)
+// Sets the strobe period in 20ms steps (starting with 0)
 void ledSuit_setStrobePeriod(uint8_t time);
 
 // Enables (enabled != 0) or disables (enabled == 0) the auto rotate function of a body part

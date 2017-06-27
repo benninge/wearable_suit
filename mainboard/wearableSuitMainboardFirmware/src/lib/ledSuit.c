@@ -190,8 +190,24 @@ void ledSuit_init(void)
 	ledSuit_enableAutoColorFade(WHOLE_SUIT, 0); // Initialize all body parts with auto color fade switched off
 	ledSuit_configureAutoColorFade(WHOLE_SUIT, 1, &_colorLut[black], 150); // Initialize auto color fade
 
-	// Initialize system tick timer
-	SysTick_Config(SystemCoreClock/50); // system tick timer 1/50 second (faster changes are not visible any more)
+	// Initialize timer for automatic coloring functions
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); // Enable clock for timer
+	TIM_TimeBaseInitTypeDef  timerInitStructure;
+	TIM_TimeBaseStructInit(&timerInitStructure); // Initialize timer initialization structure with default values
+	timerInitStructure.TIM_Period = SystemCoreClock/50 - 1;  // Timer period 20ms
+	TIM_TimeBaseInit(TIM2, &timerInitStructure); // Initialize timer
+	// Initialize timer interrupt
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn; // Timer 2 interrupt
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 10; // Low priority
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 10; // Low priority
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; // Enable interrupt
+	NVIC_Init(&NVIC_InitStructure); // Initialize timer interrupt
+	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // Enable timer update interrupt
+	TIM_ClearITPendingBit(TIM2, TIM_IT_Update); // Clear interrupt flag
+
+	// start timer for automatic coloring functions
+	TIM_Cmd(TIM2, ENABLE);
 }
 
 /*******************************************************************************
@@ -347,8 +363,7 @@ void ledSuit_colorFade(uint8_t bodyPart, uint8_t colorCount, rgbLed * colors, ui
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
 }
 
-// Shifts (rotate == 0) or rotates (rotate != 0) an array
-// For a shift operation shiftColor is used as new first/last led color
+// Shifts (rotate == 0) or rotates (rotate != 0) an array (For a shift operation shiftColor is used as new first/last led color)
 void _shiftRotateLedArray(uint16_t length, rgbLed * arrayPointer, direction direction, uint8_t rotate, rgbLed shiftColor)
 {
 	if (direction == backwards) // Rotate backwards
@@ -439,7 +454,7 @@ uint8_t ledSuit_getStrobeEnabledState(uint8_t bodyPart)
 	return 0; // Body part doesn't exist
 }
 
-// Sets the strobe period in 20ms (starting with 0)
+// Sets the strobe period in 20ms steps (starting with 0)
 void ledSuit_setStrobePeriod(uint8_t time)
 {
 	_strobePeriod = time;
@@ -725,10 +740,14 @@ void _autoColorFade()
 	}
 }
 
-// System tick timer interrupt handler
-void SysTick_Handler(void)
+// Timer 2 interrupt handler
+void TIM2_IRQHandler(void)
 {
+  if (TIM_GetITStatus(TIM2, TIM_IT_Update)) // Timer update interrupt
+  {
 	_strobe();
 	_autoRotate();
 	_autoColorFade();
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update); // Clear interrupt flag
+  }
 }
