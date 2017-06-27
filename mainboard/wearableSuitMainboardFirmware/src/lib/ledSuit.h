@@ -11,12 +11,35 @@
 #include "stm32f4xx.h"
 #include "ws2812.h"
 
+
+// Length of arms and legs
+#define ARM_LENGTH 150
+#define LEG_LENGTH 3
+// Length, channel and start index of the LED strips of the left arm
+#define LEFT_ARM_CHANNEL 1
+#define LEFT_ARM_START 0
+#define LEFT_ARM_LENGTH ARM_LENGTH
+// Length, channel and start index of the LED strips of the right arm
+#define RIGHT_ARM_CHANNEL 1
+#define RIGHT_ARM_START 150
+#define RIGHT_ARM_LENGTH ARM_LENGTH
+// Length, channel and start index of the LED strips of the left leg
+#define LEFT_LEG_CHANNEL 2
+#define LEFT_LEG_START 0
+#define LEFT_LEG_LENGTH LEG_LENGTH
+// Length, channel and start index of the LED strips of the right leg
+#define RIGHT_LEG_CHANNEL 2
+#define RIGHT_LEG_START 3
+#define RIGHT_LEG_LENGTH LEG_LENGTH
+
+
 // Body parts
-#define LEFT_ARM (0x01)
-#define RIGHT_ARM (0x02)
-#define LEFT_LEG (0x04)
-#define RIGHT_LEG (0x08)
+#define LEFT_ARM 0x01
+#define RIGHT_ARM 0x02
+#define LEFT_LEG 0x04
+#define RIGHT_LEG 0x08
 #define WHOLE_SUIT (LEFT_ARM + RIGHT_ARM + LEFT_LEG + RIGHT_LEG)
+
 
 typedef enum
 {
@@ -45,13 +68,13 @@ typedef enum
 void ledSuit_init(void);
 
 
-/*******************************************************************************
- * 																			   *
- *		Manual suit coloring functions:										   *
- *		LED strips are only updated when update is true or after running the   *
- *		update function.
- *		Body part may be a combination of the body parts defined above.											   *
- * 																			   *
+/******************************************************************************
+ * 																			  *
+ *		Manual suit coloring functions:										  *
+ *		LED strips are only updated when update is true or after running	  *
+ *		the update function.												  *
+ *		Body part may be a combination of the body parts defined above.	      *										   *
+ * 																			  *
  ******************************************************************************/
 
 // Writes the configuration of a body part to the LED strip
@@ -84,17 +107,20 @@ void ledSuit_Rotate(uint8_t bodyPart, direction direction, uint8_t update);
 void ledSuit_Shift(uint8_t bodyPart, direction direction, rgbLed shiftColor, uint8_t update);
 
 
-/*******************************************************************************
- * 																			   *
- *		Automatic suit coloring functions:									   *
- *		LED strips are continuously updated by a timer. Those functions use    *
- *		the manual coloring functions and may change the internal state of 	   *
- *		the suit (for example after switching off the strobe, the whole suit   *
- *		remains in the last enabled state)									   *
- * 																			   *
+/******************************************************************************
+ * 																			  *
+ *		Automatic suit coloring functions:									  *
+ *		LED strips are continuously updated by a timer. Those functions		  *
+ *		use the manual coloring functions and may change the internal 		  *
+ *		state of the suit. (for example after switching off the strobe, 	  *
+ *		the whole suit remains in the last enabled state.)					  *
+ *		Body part may be a combination of the body parts defined above.	 	  *
+ * 																			  *
  ******************************************************************************/
 
-
+/************************
+ *** Strobe functions ***
+ ************************/
 // Enables (enabled != 0) or disables (enabled == 0) the strobe function of a body part
 void ledSuit_enableStrobe(uint8_t bodyPart, uint8_t enabled);
 // Returns the enabled state (enabled != 0) of the body parts strobe function (for multiple body parts, the first in the list above is selected)
@@ -102,6 +128,9 @@ uint8_t ledSuit_getStrobeEnabledState(uint8_t bodyPart);
 // Sets the strobe period in 20ms steps (starting with 0)
 void ledSuit_setStrobePeriod(uint8_t time);
 
+/*****************************
+ *** Auto rotate functions ***
+ *****************************/
 // Enables (enabled != 0) or disables (enabled == 0) the auto rotate function of a body part
 void ledSuit_enableAutoRotate(uint8_t bodyPart, uint8_t enabled);
 // Returns the enabled state (enabled != 0) of the body parts auto rotate function (for multiple body parts, the first in the list above is selected)
@@ -109,6 +138,9 @@ uint8_t ledSuit_getAutoRotateEnabledState(uint8_t bodyPart);
 // Configures the auto rotate function of a body part
 void ledSuit_configureAutoRotate(uint8_t bodyPart, direction direction, uint8_t speed);
 
+/*********************************
+ *** Auto color fade functions ***
+ *********************************/
 // Enables ((enabled != 0) or disables (enabled == 0) the auto color fade function of a body part
 void ledSuit_enableAutoColorFade(uint8_t bodyPart, uint8_t enabled);
 // Returns the enabled state (enabled != 0) of the body parts auto color fade function (for multiple body parts, the first in the list above is selected)

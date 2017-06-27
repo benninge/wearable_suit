@@ -8,32 +8,12 @@
 #include "ledSuit.h"
 
 
-// Length of arms and legs
-#define ARM_LENGTH 150
-#define LEG_LENGTH 3
-// Length, channel and start index of the LED strips of the left arm
-#define LEFT_ARM_CHANNEL 1
-#define LEFT_ARM_START 0
-#define LEFT_ARM_LENGTH ARM_LENGTH
-// Length, channel and start index of the LED strips of the right arm
-#define RIGHT_ARM_CHANNEL 1
-#define RIGHT_ARM_START 150
-#define RIGHT_ARM_LENGTH ARM_LENGTH
-// Length, channel and start index of the LED strips of the left leg
-#define LEFT_LEG_CHANNEL 2
-#define LEFT_LEG_START 0
-#define LEFT_LEG_LENGTH LEG_LENGTH
-// Length, channel and start index of the LED strips of the right leg
-#define RIGHT_LEG_CHANNEL 2
-#define RIGHT_LEG_START 3
-#define RIGHT_LEG_LENGTH LEG_LENGTH
-
 // Auto rotate structure
 typedef struct
 {
 	uint8_t enabled;
 	direction direction;
-	uint8_t speed; // 255 = 500steps/s, 0 ~ 2steps/s
+	uint8_t speed;
 } autoRotateStruct;
 
 // Auto color fade structure
@@ -210,10 +190,10 @@ void ledSuit_init(void)
 	TIM_Cmd(TIM2, ENABLE);
 }
 
-/*******************************************************************************
- * 																			   *
- *		Manual suit coloring functions:										   *
- * 																			   *
+/******************************************************************************
+ * 																			  *
+ *		Manual suit coloring functions:										  *
+ * 																			  *
  ******************************************************************************/
 
 // Writes the configuration of a body part to the LED strip
@@ -429,10 +409,10 @@ void ledSuit_Shift(uint8_t bodyPart, direction direction, rgbLed shiftColor, uin
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
 }
 
-/*******************************************************************************
- * 																			   *
- *		Automatic suit coloring functions:									   *
- * 																			   *
+/******************************************************************************
+ * 																			  *
+ *		Automatic suit coloring functions:									  *
+ * 																			  *
  ******************************************************************************/
 
 // Enables (enabled != 0) or disables (enabled == 0) the strobe function of a body part
