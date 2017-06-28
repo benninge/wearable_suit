@@ -24,9 +24,7 @@ typedef enum
 
 void rs485_init(uint32_t baudRate);
 void rs485_sendMsg (const uint8_t * data, const uint8_t length);
-uint8_t rs485_recvMsg (
-              uint8_t * data, const uint8_t length,
-              unsigned long timeout);
+uint8_t rs485_recvMsg (uint8_t * data, const uint8_t length);
 void rs485_requestSensorData(sensorPart sensor);
 
 #endif /* LIB_RS485_H_ */

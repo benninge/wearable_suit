@@ -72,17 +72,17 @@ void loop() {
       //  return;  // unknown command
 
 
-      ypr0.f = mympu.ypr[0];
-      ypr1.f = mympu.ypr[1];
-      ypr2.f = mympu.ypr[2];
-      gyro0.f = mympu.gyro[0];
-      gyro1.f = mympu.gyro[1];
-      gyro2.f = mympu.gyro[2];
-      accel0.f = mympu.accel[0];
-      accel1.f = mympu.accel[1];
-      accel2.f = mympu.accel[2];
+      ypr0.f = 10;
+      ypr1.f = 20;
+      ypr2.f = 30;
+      gyro0.f = 40;
+      gyro1.f = 50;
+      gyro2.f = 60;
+      accel0.f = 70;
+      accel1.f = 80;
+      accel2.f = 90;
 
-      delay (2);  // give the master a moment to prepare to receive
+      delay (1);  // give the master a moment to prepare to receive
 
       byte msg [] = {
          0,  // send to master
@@ -126,23 +126,24 @@ void loop() {
       };
 
       digitalWrite (ENABLE_PIN, HIGH);  // enable sending
+      delay(1);
       sendMsg (fWrite, msg, sizeof msg);
       Serial.flush();
       digitalWrite (ENABLE_PIN, LOW);  // disable sending
-      delay (1000);
+      delay (100);
 
      }
 
 #ifdef DMP_DEBUG
     switch (ret) {
 	case 0: c++; break;
-	case 1: np++; return;
-	case 2: err_o++; return;
-	case 3: err_c++; return;
+	case 1: np++; break;
+	case 2: err_o++; break;
+	case 3: err_c++; break;
 	default:
 		Serial.print("READ ERROR!  ");
 		Serial.println(ret);
-		return;
+		break;;
     }
 
 	    Serial.print(c); Serial.print(np); Serial.print("  "); Serial.print(err_c); Serial.print(" "); Serial.print(err_o);

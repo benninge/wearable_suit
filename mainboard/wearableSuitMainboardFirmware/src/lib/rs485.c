@@ -50,10 +50,11 @@ PERMISSION TO DISTRIBUTE
  or the use or other dealings in the software.
  */
 
-#define MAX_STRLEN 254
+#define MAX_STRLEN 100
 #define TIMEOUT 50
 
-volatile uint8_t received_string[MAX_STRLEN+1];
+bool have_stx = false;
+bool have_etx = false;
 uint8_t decoded_string[MAX_STRLEN+1];
 
 // Sensor Data structure
@@ -62,7 +63,7 @@ typedef struct
 	union float2bytes {
 		float f;
 		uint8_t b[sizeof(float)];
-	} ypr0, ypr1, ypr2, accel0, accel1, accel2, gyro0, gyro1, gyro2;
+	} ypr0, ypr1, ypr2, gyro0, gyro1, gyro2, accel0, accel1, accel2;
 } SensorData;
 
 SensorData Sensor_arm_left;
@@ -231,126 +232,92 @@ void USART1_IRQHandler(void){
 	if( USART_GetITStatus(USART1, USART_IT_RXNE) ){
 
 		static uint8_t cnt = 0; // this counter is used to determine the string length
-		char t = USART1->DR; // the character from the USART1 data register is saved in t
+		static bool first_nibble = false;
+		static bool bad_packet = false;
+		uint8_t t = USART1->DR; // the character from the USART1 data register is saved in t
+		static uint8_t curr_byte;
 
-		/* check if the received character is not the LF character (used to determine end of string)
-		 * or the if the maximum string length has been been reached
-		 */
-		//TODO: change to recognize STX ETX and CRC
-		if( (cnt < MAX_STRLEN) ){
-			received_string[cnt] = t;
-			cnt++;
+		switch (t) {
+			case '\2':
+				cnt = 0;
+				have_stx = true;
+				have_etx = false;
+				first_nibble = true;
+				bad_packet = false;
+				break;
+
+			case '\3':
+				have_etx = true;
+				break;
+
+			default:
+				//wait for packet start
+				if (!have_stx) {
+					break;
+				}
+		        // check if t is in valid form (4 bits followed by 4 bits complemented)
+		        if ((t >> 4) != ((t & 0x0F) ^ 0x0F) )
+		            bad_packet = true;  // bad byte
+
+		        t >>= 4; //remove complemented bits
+		        // high-order nibble?
+		        if (first_nibble) {
+		            curr_byte = t;
+		            first_nibble = false;
+		            break;
+		            }  // end of first nibble
+
+		        // low-order nibble
+		        curr_byte <<= 4;
+		        curr_byte |= t;
+		        first_nibble = true;
+
+		        // if we have the ETX this must be the CRC
+		        if (have_etx) {
+		            //if (crc8 (decoded_string, cnt) != curr_byte) {
+		            //	bad_packet = true;
+		            //} else if (!bad_packet) {
+		            	//good and complete packet
+		            	//TODO: adapt for up to 4 bodyparts
+		            	for ( int i=0; i < sizeof(float); i++ ) {
+		            		Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
+		            		Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
+		            		Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
+		            		Sensor_arm_left.gyro0.b[i] = decoded_string[2+12+i];
+		            		Sensor_arm_left.gyro1.b[i] = decoded_string[2+12+4+i];
+		            		Sensor_arm_left.gyro2.b[i] = decoded_string[2+12+8+i];
+		            		Sensor_arm_left.accel0.b[i] = decoded_string[2+24+i];
+		            		Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
+		            		Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
+		            	}
+				        float debugyypr0 = Sensor_arm_left.ypr0.f;
+				        float debugyypr1 = Sensor_arm_left.ypr1.f;
+				        float debugyypr2 = Sensor_arm_left.ypr2.f;
+				        float debugygyro0 = Sensor_arm_left.gyro0.f;
+				        float debugygyro1 = Sensor_arm_left.gyro1.f;
+				        float debugygyro2 = Sensor_arm_left.gyro2.f;
+				        float debugyaccel0 = Sensor_arm_left.accel0.f;
+				        float debugyaccel1 = Sensor_arm_left.accel1.f;
+				        float debugyaccel2 = Sensor_arm_left.accel2.f;
+				        int debug = 1;
+		            //}
+		            break;
+		        }
+
+		        // keep adding to string until packet complete
+		        if (cnt < MAX_STRLEN) {
+		            decoded_string[cnt++] = curr_byte;
+		        } else {
+		            bad_packet = true;
+		        }
+		        break;
 		}
-		else{ // otherwise reset the character counter and analyze the received msg
-			cnt = 0;
-			uint8_t error;
-			error = rs485_recvMsg(decoded_string, 100, TIMEOUT);
-			if (error == 0) {
-				//TODO: if debug: print error
-			}
-			else {
-				//TODO: adapt for up to 4 bodyparts
-		         for ( int i=0; i < sizeof(float); i++ ) {
-		        	 Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
-		         }
-		         float debugypr0 = Sensor_arm_left.ypr0.f;
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.gyro0.b[i] = decoded_string[12+2+i];
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.gyro1.b[i] = decoded_string[12+2+4+i];
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.gyro2.b[i] = decoded_string[12+2+8+i];
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.accel0.b[i] = decoded_string[24+2+i];
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.accel1.b[i] = decoded_string[24+2+4+i];
-		         for ( int i=0; i < sizeof(float); i++ )
-		        	 Sensor_arm_left.accel2.b[i] = decoded_string[24+2+8+i];
-			}
+
+		//if bad packet, reset
+		if (bad_packet) {
+			have_stx = false;
 		}
 		USART_ClearFlag(USART1, USART_IT_RXNE);
 	}
 }
-
-
-// receive a message, maximum "length" uint8_ts
-// if nothing received, or an error (eg. bad CRC, bad data) return 0
-// otherwise, returns length of received data
-uint8_t rs485_recvMsg (
-              uint8_t * data,                    // decoded_string to receive into
-              const uint8_t length,              // maximum decoded_string size
-              unsigned long timeout)          // milliseconds before timing out
-  {
-
-  bool have_stx = false;
-  bool have_etx;
-  uint8_t input_pos;
-  bool first_nibble;
-  uint8_t current_uint8_t;
-
-  for (int i = 0; i < MAX_STRLEN+1; i++)
-    {
-      uint8_t inuint8_t = received_string[i];
-
-      switch (inuint8_t)
-        {
-
-        case '\2':   // start of text
-          have_stx = true;
-          have_etx = false;
-          input_pos = 0;
-          first_nibble = true;
-          break;
-
-        case '\3':   // end of text
-          have_etx = true;
-          break;
-
-        default:
-          // wait until packet officially starts
-          if (!have_stx)
-            break;
-
-          // check uint8_t is in valid form (4 bits followed by 4 bits complemented)
-          if ((inuint8_t >> 4) != ((inuint8_t & 0x0F) ^ 0x0F) )
-            return 0;  // bad character
-
-          // convert back
-          inuint8_t >>= 4;
-
-          // high-order nibble?
-          if (first_nibble)
-            {
-            current_uint8_t = inuint8_t;
-            first_nibble = false;
-            break;
-            }  // end of first nibble
-
-          // low-order nibble
-          current_uint8_t <<= 4;
-          current_uint8_t |= inuint8_t;
-          first_nibble = true;
-
-          // if we have the ETX this must be the CRC
-          if (have_etx)
-            {
-            if (crc8 (data, input_pos) != current_uint8_t)
-              return 0;  // bad CRC
-            return input_pos;  // return received length
-            }  // end if have ETX already
-
-          // keep adding if not full
-          if (input_pos < length)
-            data [input_pos++] = current_uint8_t;
-          else
-            return 0;  // overflow
-          break;
-
-        }  // end of switch
-    } // end of while
-} // end of recvMsg
 

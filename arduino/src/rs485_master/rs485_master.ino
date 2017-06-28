@@ -42,10 +42,10 @@ void loop()
   };
 
   // send to slave
- digitalWrite (ENABLE_PIN, HIGH);  // enable sending
- sendMsg (fWrite, msg, sizeof msg);
- Serial1.flush();
- digitalWrite (ENABLE_PIN, LOW);  // disable sending
+ //digitalWrite (ENABLE_PIN, HIGH);  // enable sending
+ //sendMsg (fWrite, msg, sizeof msg);
+ //Serial1.flush();
+ //digitalWrite (ENABLE_PIN, LOW);  // disable sending
 
   // receive response
  float2bytes ypr0;
