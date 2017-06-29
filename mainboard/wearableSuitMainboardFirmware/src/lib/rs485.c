@@ -55,6 +55,7 @@ PERMISSION TO DISTRIBUTE
 
 bool have_stx = false;
 bool have_etx = false;
+bool complete_string = false;
 uint8_t decoded_string[MAX_STRLEN+1];
 
 // Sensor Data structure
@@ -126,15 +127,11 @@ void rs485_init(uint32_t baudRate) {
     GPIO_ResetBits(GPIOB, GPIO_Pin_5);
 }
 
-void USART_puts(USART_TypeDef* USARTx, volatile uint8_t *s){
-
-	while(*s){
+void USART_puts(USART_TypeDef* USARTx, uint8_t s){
 		// wait until data register is empty
 		while( !(USARTx->SR & 0x00000040) );
-		USART_SendData(USARTx, *s);
-		*s++;
+		USART_SendData(USARTx, s);
 	}
-}
 
 // send a uint8_t complemented, repeated
 // only values sent would be (in hex):
@@ -146,12 +143,12 @@ uint8_t c;
   // first nibble
   c = what >> 4;
   uint8_t send1 = (c << 4) | (c ^ 0x0F);
-  USART_puts(USART1,&send1 );
+  USART_puts(USART1,send1 );
 
   // second nibble
   c = what & 0x0F;
   uint8_t send2 = (c << 4) | (c ^ 0x0F);
-  USART_puts(USART1,&send2 );
+  USART_puts(USART1,send2 );
 
 }  // end of sendComplemented
 
@@ -182,19 +179,20 @@ void rs485_sendMsg (const uint8_t * data, const uint8_t length)
 	uint8_t STX = '\2';
 	uint8_t ETX = '\3';
 
-	USART_puts(USART1, &STX );
+	USART_puts(USART1, STX );
 	for (uint8_t i = 0; i < length; i++)
 		sendComplemented (data [i]);
-	USART_puts(USART1, &ETX );
+	USART_puts(USART1, ETX );
 	sendComplemented (crc8 (data, length));
 }  // end of sendMsg
 
+//send message to sensor board to request sensor data
 void rs485_requestSensorData(sensorPart sensor) {
 	uint8_t msg[2];
 
 	//Enable sending
 	GPIO_SetBits(GPIOB, GPIO_Pin_5);
-
+	//TODO: add delay here?
 	switch (sensor) {
 
 		case leftArmSensor:
@@ -225,6 +223,31 @@ void rs485_requestSensorData(sensorPart sensor) {
 	GPIO_ResetBits(GPIOB, GPIO_Pin_5);
 }
 
+void rs485_updateSensorData(){
+	//TODO: adapt to arms+legs, depending on sender of packet (2nd byte in string)
+	for ( int i=0; i < sizeof(float); i++ ) {
+		Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
+		Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
+		Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
+		Sensor_arm_left.gyro0.b[i] = decoded_string[2+12+i];
+		Sensor_arm_left.gyro1.b[i] = decoded_string[2+12+4+i];
+		Sensor_arm_left.gyro2.b[i] = decoded_string[2+12+8+i];
+		Sensor_arm_left.accel0.b[i] = decoded_string[2+24+i];
+		Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
+		Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
+	}
+    float debugyypr0 = Sensor_arm_left.ypr0.f;
+    float debugyypr1 = Sensor_arm_left.ypr1.f;
+    float debugyypr2 = Sensor_arm_left.ypr2.f;
+    float debugygyro0 = Sensor_arm_left.gyro0.f;
+    float debugygyro1 = Sensor_arm_left.gyro1.f;
+    float debugygyro2 = Sensor_arm_left.gyro2.f;
+    float debugyaccel0 = Sensor_arm_left.accel0.f;
+    float debugyaccel1 = Sensor_arm_left.accel1.f;
+    float debugyaccel2 = Sensor_arm_left.accel2.f;
+    int debug = 1;
+    complete_string = false;
+}
 
 void USART1_IRQHandler(void){
 
@@ -238,6 +261,7 @@ void USART1_IRQHandler(void){
 		static uint8_t curr_byte;
 
 		switch (t) {
+			//begin of packet
 			case '\2':
 				cnt = 0;
 				have_stx = true;
@@ -245,7 +269,7 @@ void USART1_IRQHandler(void){
 				first_nibble = true;
 				bad_packet = false;
 				break;
-
+			//end of packet
 			case '\3':
 				have_etx = true;
 				break;
@@ -279,27 +303,8 @@ void USART1_IRQHandler(void){
 		            //} else if (!bad_packet) {
 		            	//good and complete packet
 		            	//TODO: adapt for up to 4 bodyparts
-		            	for ( int i=0; i < sizeof(float); i++ ) {
-		            		Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
-		            		Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
-		            		Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
-		            		Sensor_arm_left.gyro0.b[i] = decoded_string[2+12+i];
-		            		Sensor_arm_left.gyro1.b[i] = decoded_string[2+12+4+i];
-		            		Sensor_arm_left.gyro2.b[i] = decoded_string[2+12+8+i];
-		            		Sensor_arm_left.accel0.b[i] = decoded_string[2+24+i];
-		            		Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
-		            		Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
-		            	}
-				        float debugyypr0 = Sensor_arm_left.ypr0.f;
-				        float debugyypr1 = Sensor_arm_left.ypr1.f;
-				        float debugyypr2 = Sensor_arm_left.ypr2.f;
-				        float debugygyro0 = Sensor_arm_left.gyro0.f;
-				        float debugygyro1 = Sensor_arm_left.gyro1.f;
-				        float debugygyro2 = Sensor_arm_left.gyro2.f;
-				        float debugyaccel0 = Sensor_arm_left.accel0.f;
-				        float debugyaccel1 = Sensor_arm_left.accel1.f;
-				        float debugyaccel2 = Sensor_arm_left.accel2.f;
-				        int debug = 1;
+		            	complete_string = true;
+		            	rs485_updateSensorData();
 		            //}
 		            break;
 		        }
@@ -313,7 +318,7 @@ void USART1_IRQHandler(void){
 		        break;
 		}
 
-		//if bad packet, reset
+		//if bad packet, reset and wait for next stx
 		if (bad_packet) {
 			have_stx = false;
 		}

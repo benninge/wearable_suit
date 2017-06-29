@@ -26,5 +26,5 @@ void rs485_init(uint32_t baudRate);
 void rs485_sendMsg (const uint8_t * data, const uint8_t length);
 uint8_t rs485_recvMsg (uint8_t * data, const uint8_t length);
 void rs485_requestSensorData(sensorPart sensor);
-
+void rs485_updateSensorData();
 #endif /* LIB_RS485_H_ */

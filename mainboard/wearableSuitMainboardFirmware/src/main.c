@@ -56,6 +56,7 @@ int main(void)
 
 	while(1) {
 		//rs485_requestSensorData(leftArmSensor);
+		rs485_updateSensorData(leftArmSensor);
 		Delay(1000);
 	}
 }
