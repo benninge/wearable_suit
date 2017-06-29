@@ -8,6 +8,20 @@
 #include "ledSuit.h"
 
 
+// Channel and start index of the LED strips of the left arm
+#define LEFT_ARM_CHANNEL 1
+#define LEFT_ARM_START 0
+// Channel and start index of the LED strips of the right arm
+#define RIGHT_ARM_CHANNEL 1
+#define RIGHT_ARM_START 150
+// Channel and start index of the LED strips of the left leg
+#define LEFT_LEG_CHANNEL 2
+#define LEFT_LEG_START 0
+// Channel and start index of the LED strips of the right leg
+#define RIGHT_LEG_CHANNEL 2
+#define RIGHT_LEG_START 3
+
+
 // Auto rotate structure
 typedef struct
 {

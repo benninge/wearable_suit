@@ -15,21 +15,9 @@
 // Length of arms and legs
 #define ARM_LENGTH 150
 #define LEG_LENGTH 3
-// Length, channel and start index of the LED strips of the left arm
-#define LEFT_ARM_CHANNEL 1
-#define LEFT_ARM_START 0
 #define LEFT_ARM_LENGTH ARM_LENGTH
-// Length, channel and start index of the LED strips of the right arm
-#define RIGHT_ARM_CHANNEL 1
-#define RIGHT_ARM_START 150
 #define RIGHT_ARM_LENGTH ARM_LENGTH
-// Length, channel and start index of the LED strips of the left leg
-#define LEFT_LEG_CHANNEL 2
-#define LEFT_LEG_START 0
 #define LEFT_LEG_LENGTH LEG_LENGTH
-// Length, channel and start index of the LED strips of the right leg
-#define RIGHT_LEG_CHANNEL 2
-#define RIGHT_LEG_START 3
 #define RIGHT_LEG_LENGTH LEG_LENGTH
 
 
