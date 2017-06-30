@@ -55,7 +55,6 @@ PERMISSION TO DISTRIBUTE
 
 bool have_stx = false;
 bool have_etx = false;
-bool complete_string = false;
 uint8_t decoded_string[MAX_STRLEN+1];
 
 // Sensor Data structure
@@ -74,6 +73,8 @@ SensorData Sensor_leg_right;
 
 
 void rs485_init(uint32_t baudRate) {
+
+	rs485_complete_string = false;
 
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
@@ -224,29 +225,31 @@ void rs485_requestSensorData(sensorPart sensor) {
 }
 
 void rs485_updateSensorData(){
-	//TODO: adapt to arms+legs, depending on sender of packet (2nd byte in string)
-	for ( int i=0; i < sizeof(float); i++ ) {
-		Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
-		Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
-		Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
-		Sensor_arm_left.gyro0.b[i] = decoded_string[2+12+i];
-		Sensor_arm_left.gyro1.b[i] = decoded_string[2+12+4+i];
-		Sensor_arm_left.gyro2.b[i] = decoded_string[2+12+8+i];
-		Sensor_arm_left.accel0.b[i] = decoded_string[2+24+i];
-		Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
-		Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
+	if (rs485_complete_string) {
+		//TODO: adapt to arms+legs, depending on sender of packet (2nd byte in string)
+		for ( int i=0; i < sizeof(float); i++ ) {
+			Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
+			Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
+			Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
+			Sensor_arm_left.gyro0.b[i] = decoded_string[2+12+i];
+			Sensor_arm_left.gyro1.b[i] = decoded_string[2+12+4+i];
+			Sensor_arm_left.gyro2.b[i] = decoded_string[2+12+8+i];
+			Sensor_arm_left.accel0.b[i] = decoded_string[2+24+i];
+			Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
+			Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
+		}
+		float debugyypr0 = Sensor_arm_left.ypr0.f;
+		float debugyypr1 = Sensor_arm_left.ypr1.f;
+		float debugyypr2 = Sensor_arm_left.ypr2.f;
+		float debugygyro0 = Sensor_arm_left.gyro0.f;
+		float debugygyro1 = Sensor_arm_left.gyro1.f;
+		float debugygyro2 = Sensor_arm_left.gyro2.f;
+		float debugyaccel0 = Sensor_arm_left.accel0.f;
+		float debugyaccel1 = Sensor_arm_left.accel1.f;
+		float debugyaccel2 = Sensor_arm_left.accel2.f;
+		int debug = 1;
+		rs485_complete_string = false;
 	}
-    float debugyypr0 = Sensor_arm_left.ypr0.f;
-    float debugyypr1 = Sensor_arm_left.ypr1.f;
-    float debugyypr2 = Sensor_arm_left.ypr2.f;
-    float debugygyro0 = Sensor_arm_left.gyro0.f;
-    float debugygyro1 = Sensor_arm_left.gyro1.f;
-    float debugygyro2 = Sensor_arm_left.gyro2.f;
-    float debugyaccel0 = Sensor_arm_left.accel0.f;
-    float debugyaccel1 = Sensor_arm_left.accel1.f;
-    float debugyaccel2 = Sensor_arm_left.accel2.f;
-    int debug = 1;
-    complete_string = false;
 }
 
 void USART1_IRQHandler(void){
@@ -298,14 +301,14 @@ void USART1_IRQHandler(void){
 
 		        // if we have the ETX this must be the CRC
 		        if (have_etx) {
-		            //if (crc8 (decoded_string, cnt) != curr_byte) {
-		            //	bad_packet = true;
-		            //} else if (!bad_packet) {
+		            if (crc8 (decoded_string, cnt) != curr_byte) {
+		            	bad_packet = true;
+		            } else if (!bad_packet) {
 		            	//good and complete packet
 		            	//TODO: adapt for up to 4 bodyparts
-		            	complete_string = true;
-		            	rs485_updateSensorData();
-		            //}
+		            	rs485_complete_string = true;
+		            	//rs485_updateSensorData();
+		            }
 		            break;
 		        }
 

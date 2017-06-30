@@ -25,10 +25,10 @@ int main(void)
 {
 	SystemInit();
 
-	ledSuit_init();
+	//ledSuit_init();
 	rs485_init(38400);
 
-	rgbLed fadeColors[4] = {
+	/*rgbLed fadeColors[4] = {
 				{ .r = 255, .g = 0, .b = 0 },
 				{ .r = 0, .g = 255, .b = 0 },
 				{ .r = 0, .g = 0, .b = 255 },
@@ -52,12 +52,12 @@ int main(void)
 	ledSuit_color(LEFT_ARM, 0, 0, black, 0);
 	ledSut_colorArray(LEFT_ARM, 0, 5, pulseColors, 1);
 	ledSuit_configureAutoRotate(RIGHT_ARM + LEFT_ARM, forwards, 255);
-	ledSuit_enableAutoRotate(RIGHT_ARM + LEFT_ARM, 1);
+	ledSuit_enableAutoRotate(RIGHT_ARM + LEFT_ARM, 1);*/
 
 	while(1) {
 		//rs485_requestSensorData(leftArmSensor);
 		rs485_updateSensorData(leftArmSensor);
-		Delay(1000);
+		//Delay(1000);
 	}
 }
 
