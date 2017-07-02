@@ -59,78 +59,76 @@ void loop() {
 
     byte buffer [10];
 
-    //byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer), 50);
+    byte received = recvMsg (fAvailable, fRead, buffer, sizeof (buffer), 50);
 
-    if (true)
-    //if (false)
-      {
-      //if (buffer [0] != SLAVE_ID)
-      //  return;  // not my device
+      if (received != 0){
 
-      //TODO: remove
-      //if (buffer [1] != 2)
-      //  return;  // unknown command
+		  if (buffer [0] != SLAVE_ID)
+			return;  // not me
+
+		  if (buffer [1] != 0)
+			return;  // sender not master
 
 
-      ypr0.f = 10;
-      ypr1.f = 20;
-      ypr2.f = 30;
-      gyro0.f = 40;
-      gyro1.f = 50;
-      gyro2.f = 60;
-      accel0.f = 70;
-      accel1.f = 80;
-      accel2.f = 90;
+		  ypr0.f = 10;
+		  ypr1.f = 20;
+		  ypr2.f = 30;
+		  gyro0.f = 40;
+		  gyro1.f = 50;
+		  gyro2.f = 60;
+		  accel0.f = 70;
+		  accel1.f = 80;
+		  accel2.f = 90;
 
-      delay (1);  // give the master a moment to prepare to receive
+		  delay (2);  // give the master a moment to prepare to receive
 
-      byte msg [] = {
-         0,  // send to master
-		 SLAVE_ID, // sent from SLAVE_ID
-         ypr0.b[0],
-		 ypr0.b[1],
-		 ypr0.b[2],
-		 ypr0.b[3],
-		 ypr1.b[0],
-		 ypr1.b[1],
-		 ypr1.b[2],
-		 ypr1.b[3],
-		 ypr2.b[0],
-		 ypr2.b[1],
-		 ypr2.b[2],
-		 ypr2.b[3],
-		 gyro0.b[0],
-		 gyro0.b[1],
-		 gyro0.b[2],
-		 gyro0.b[3],
-		 gyro1.b[0],
-		 gyro1.b[1],
-		 gyro1.b[2],
-		 gyro1.b[3],
-		 gyro2.b[0],
-		 gyro2.b[1],
-		 gyro2.b[2],
-		 gyro2.b[3],
-		 accel0.b[0],
-		 accel0.b[1],
-		 accel0.b[2],
-		 accel0.b[3],
-		 accel1.b[0],
-		 accel1.b[1],
-		 accel1.b[2],
-		 accel1.b[3],
-		 accel2.b[0],
-		 accel2.b[1],
-		 accel2.b[2],
-		 accel2.b[3],
-      };
+		  byte msg [] = {
+			 0,  // send to master
+			 SLAVE_ID, // sent from SLAVE_ID
+			 ypr0.b[0],
+			 ypr0.b[1],
+			 ypr0.b[2],
+			 ypr0.b[3],
+			 ypr1.b[0],
+			 ypr1.b[1],
+			 ypr1.b[2],
+			 ypr1.b[3],
+			 ypr2.b[0],
+			 ypr2.b[1],
+			 ypr2.b[2],
+			 ypr2.b[3],
+			 gyro0.b[0],
+			 gyro0.b[1],
+			 gyro0.b[2],
+			 gyro0.b[3],
+			 gyro1.b[0],
+			 gyro1.b[1],
+			 gyro1.b[2],
+			 gyro1.b[3],
+			 gyro2.b[0],
+			 gyro2.b[1],
+			 gyro2.b[2],
+			 gyro2.b[3],
+			 accel0.b[0],
+			 accel0.b[1],
+			 accel0.b[2],
+			 accel0.b[3],
+			 accel1.b[0],
+			 accel1.b[1],
+			 accel1.b[2],
+			 accel1.b[3],
+			 accel2.b[0],
+			 accel2.b[1],
+			 accel2.b[2],
+			 accel2.b[3],
+		  };
 
-      digitalWrite (ENABLE_PIN, HIGH);  // enable sending
-      delay(1);
-      sendMsg (fWrite, msg, sizeof msg);
-      Serial.flush();
-      digitalWrite (ENABLE_PIN, LOW);  // disable sending
-      delay (100);
+		  digitalWrite (ENABLE_PIN, HIGH);  // enable sending
+		  delay(1);
+		  sendMsg (fWrite, msg, sizeof msg);
+		  Serial.flush();
+		  digitalWrite (ENABLE_PIN, LOW);  // disable sending
+		  //delay (100);
 
      }
 

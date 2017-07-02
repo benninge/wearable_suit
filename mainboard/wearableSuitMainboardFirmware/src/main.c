@@ -14,8 +14,7 @@
 #include "lib/ledSuit.h"
 #include "lib/rs485.h"
 
-
-void Delay(uint32_t time)
+void Delay2(uint32_t time)
 {
 	time *= 10000;
 	while(time--);
@@ -55,9 +54,10 @@ int main(void)
 	ledSuit_enableAutoRotate(RIGHT_ARM + LEFT_ARM, 1);*/
 
 	while(1) {
-		//rs485_requestSensorData(leftArmSensor);
+		rs485_requestSensorData(leftArmSensor);
+		Delay2(100);
 		rs485_updateSensorData(leftArmSensor);
-		//Delay(1000);
+		//Delay(33);
 	}
 }
 

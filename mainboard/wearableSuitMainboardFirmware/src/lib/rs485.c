@@ -52,6 +52,7 @@ PERMISSION TO DISTRIBUTE
 
 #define MAX_STRLEN 100
 #define TIMEOUT 50
+#define rs485_DEBUG
 
 bool have_stx = false;
 bool have_etx = false;
@@ -71,6 +72,11 @@ SensorData Sensor_arm_right;
 SensorData Sensor_leg_left;
 SensorData Sensor_leg_right;
 
+void Delay(uint32_t time)
+{
+	time *= 10000;
+	while(time--);
+}
 
 void rs485_init(uint32_t baudRate) {
 
@@ -131,8 +137,10 @@ void rs485_init(uint32_t baudRate) {
 void USART_puts(USART_TypeDef* USARTx, uint8_t s){
 		// wait until data register is empty
 		while( !(USARTx->SR & 0x00000040) );
-		USART_SendData(USARTx, s);
-	}
+		USART_SendData(USARTx, (uint16_t)s);
+		//USARTx->DR = (uint16_t)(s & 0x01FF);
+		while( !(USARTx->SR & 0x00000040) );
+}
 
 // send a uint8_t complemented, repeated
 // only values sent would be (in hex):
@@ -177,43 +185,44 @@ static uint8_t crc8 (const uint8_t *addr, uint8_t len)
 // put STX at start, ETX at end, and add CRC
 void rs485_sendMsg (const uint8_t * data, const uint8_t length)
 {
-	uint8_t STX = '\2';
-	uint8_t ETX = '\3';
+	//uint8_t STX = '\2';
+	//uint8_t ETX = '\3';
 
-	USART_puts(USART1, STX );
+	USART_puts(USART1, '\2' );
 	for (uint8_t i = 0; i < length; i++)
 		sendComplemented (data [i]);
-	USART_puts(USART1, ETX );
+	USART_puts(USART1, '\3' );
 	sendComplemented (crc8 (data, length));
 }  // end of sendMsg
 
 //send message to sensor board to request sensor data
 void rs485_requestSensorData(sensorPart sensor) {
-	uint8_t msg[2];
+	uint8_t msg[3];
 
 	//Enable sending
 	GPIO_SetBits(GPIOB, GPIO_Pin_5);
 	//TODO: add delay here?
+	Delay(1);
 	switch (sensor) {
 
 		case leftArmSensor:
 			msg[0] = 1;
-			msg[1] = 2;
+			msg[1] = 0;
 			rs485_sendMsg(msg, sizeof msg);
 			break;
 		case rightArmSensor:
 			msg[0] = 2;
-			msg[1] = 2;
+			msg[1] = 0;
 			rs485_sendMsg(msg, sizeof msg);
 			break;
 		case leftLegSensor:
 			msg[0] = 3;
-			msg[1] = 2;
+			msg[1] = 0;
 			rs485_sendMsg(msg, sizeof msg);
 			break;
 		case rightLegSensor:
 			msg[0] = 4;
-			msg[1] = 2;
+			msg[1] = 0;
 			rs485_sendMsg(msg, sizeof msg);
 			break;
 		default:
@@ -238,6 +247,8 @@ void rs485_updateSensorData(){
 			Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
 			Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
 		}
+
+#ifdef rs485_DEBUG
 		float debugyypr0 = Sensor_arm_left.ypr0.f;
 		float debugyypr1 = Sensor_arm_left.ypr1.f;
 		float debugyypr2 = Sensor_arm_left.ypr2.f;
@@ -248,6 +259,8 @@ void rs485_updateSensorData(){
 		float debugyaccel1 = Sensor_arm_left.accel1.f;
 		float debugyaccel2 = Sensor_arm_left.accel2.f;
 		int debug = 1;
+#endif
+
 		rs485_complete_string = false;
 	}
 }
