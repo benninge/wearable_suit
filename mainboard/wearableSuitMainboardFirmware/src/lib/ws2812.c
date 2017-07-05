@@ -104,7 +104,7 @@ void ws2812_init(void)
 
 	// GPIO initialization
 	GPIO_InitTypeDef gpioInitStructure;
-	GPIO_StructInit (&gpioInitStructure); // Initialize GPIO initialization structure with default values
+	GPIO_StructInit(&gpioInitStructure); // Initialize GPIO initialization structure with default values
 	gpioInitStructure.GPIO_Mode = GPIO_Mode_AF; // GPIO in arbitrary function mode
 	gpioInitStructure.GPIO_Speed = GPIO_Speed_100MHz; // 100MHz GPIO speed
 
@@ -199,8 +199,8 @@ void ws2812_init(void)
 
 #ifdef ENABLE_CHANNEL_1
 	// Initialize DMA stream 4
-	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t) &TIM3->CCR1; // Load data into capture compare register 1
-	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t) dmaBuffer1; // Use DMA buffer as data source
+	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&TIM3->CCR1; // Load data into capture compare register 1
+	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t)dmaBuffer1; // Use DMA buffer as data source
 	dmaInitStructure.DMA_BufferSize = DMA_BUFFER1_LENGTH; // DMA buffer size = length of DMA buffer
 	DMA_Init(DMA1_Stream4, &dmaInitStructure); // Initialize DMA stream 4
 	DMA_Cmd(DMA1_Stream4, ENABLE); // Enable DMA stream 4
@@ -209,8 +209,8 @@ void ws2812_init(void)
 
 #ifdef ENABLE_CHANNEL_2
 	// Initialize DMA stream 5
-	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t) &TIM3->CCR2; // Load data into capture compare register 2
-	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t) dmaBuffer2; // Use DMA buffer as data source
+	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&TIM3->CCR2; // Load data into capture compare register 2
+	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t)dmaBuffer2; // Use DMA buffer as data source
 	dmaInitStructure.DMA_BufferSize = DMA_BUFFER2_LENGTH; // DMA buffer size = length of DMA buffer
 	DMA_Init(DMA1_Stream5, &dmaInitStructure); // Initialize DMA stream 5
 	DMA_Cmd(DMA1_Stream5, ENABLE); // Enable DMA stream 5
@@ -219,8 +219,8 @@ void ws2812_init(void)
 
 #ifdef ENABLE_CHANNEL_3
 	// Initialize DMA stream 7
-	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t) &TIM3->CCR3; // Load data into capture compare register 3
-	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t) dmaBuffer3; // Use DMA buffer as data source
+	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&TIM3->CCR3; // Load data into capture compare register 3
+	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t)dmaBuffer3; // Use DMA buffer as data source
 	dmaInitStructure.DMA_BufferSize = DMA_BUFFER3_LENGTH; // DMA buffer size = length of DMA buffer
 	DMA_Init(DMA1_Stream7, &dmaInitStructure); // Initialize DMA stream 7
 	DMA_Cmd(DMA1_Stream7, ENABLE); // Enable DMA stream 7
@@ -229,8 +229,8 @@ void ws2812_init(void)
 
 #ifdef ENABLE_CHANNEL_4
 	// Initialize DMA stream 2
-	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t) &TIM3->CCR4; // Load data into capture compare register 4
-	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t) dmaBuffer4; // Use DMA buffer as data source
+	dmaInitStructure.DMA_PeripheralBaseAddr = (uint32_t)&TIM3->CCR4; // Load data into capture compare register 4
+	dmaInitStructure.DMA_Memory0BaseAddr = (uint32_t)dmaBuffer4; // Use DMA buffer as data source
 	dmaInitStructure.DMA_BufferSize = DMA_BUFFER4_LENGTH; // DMA buffer size = length of DMA buffer
 	DMA_Init(DMA1_Stream2, &dmaInitStructure); // Initialize DMA stream 2
 	DMA_Cmd(DMA1_Stream2, ENABLE); // Enable DMA stream 2
