@@ -11,6 +11,11 @@
 #include "stm32f4xx.h"
 
 
+// Microphone output pin connected to pin C0
+// Microphone AR pin connected to pin C1
+// Microphone gain pin connected to pin C2
+
+
 // Initializes the microphone library
 void mic_init(void);
 
