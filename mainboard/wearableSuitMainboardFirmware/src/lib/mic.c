@@ -18,7 +18,7 @@
 // FFT instance, FFT size should be half of number of samples
 const arm_cfft_instance_f32 _fftInstance = {1024, twiddleCoef_1024, armBitRevIndexTable1024, ARMBITREVINDEXTABLE1024_TABLE_LENGTH};
 // Indexes which are used for generating a spectrum from the FFT output
-const uint16_t _spectrumIndexes[10] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 511};
+const uint16_t _spectrumIndexes[10] = {1, 2, 3, 6, 12, 22, 40, 74, 137, 254};
 
 
 // Global variables
@@ -77,7 +77,7 @@ void mic_init(void)
 }
 
 // Gets the spectrum of the current sound recorded by the microphone, The array size of "spectrum" must be 10
-void mic_getSpectrum(uint8_t * spectrum)
+void mic_getSpectrum(uint8_t * spectrum, uint8_t sensitivity)
 {
 	const arm_cfft_instance_f32 * fft = &_fftInstance; // FFT instance pointer
 
@@ -95,13 +95,13 @@ void mic_getSpectrum(uint8_t * spectrum)
 	arm_cmplx_mag_f32(fftInput, fftOutput, NUMBER_OF_SAMPLES / 2);
 
 	// Calculate the first spectrum data point from the FFT output
-	if((uint16_t)(fftOutput[1] / 1000) > 255) // Amplitude of the frequency range is above the uint8 value range
+	if((uint16_t)(fftOutput[1] / (200 + 40 * (256 - sensitivity))) > 255) // Amplitude of the frequency range is above the uint8 value range
 	{
 		spectrum[0] = 255; // Set data point to max value
 	}
 	else
 	{
-		spectrum[0] = (uint16_t)(fftOutput[1] / 1000);
+		spectrum[0] = (uint16_t)(fftOutput[1] / (200 + 40 * (256 - sensitivity)));
 	}
 
 	// Calculate the remaining spectrum data points from the FFT output
@@ -111,9 +111,9 @@ void mic_getSpectrum(uint8_t * spectrum)
 		uint16_t max = 0;
 		for (uint16_t j = _spectrumIndexes[i] + 1; j <= _spectrumIndexes[i + 1]; j++)
 		{
-			if ((fftOutput[j] / 1000) > max)
+			if ((fftOutput[j] / (200 + 40 * (256 - sensitivity))) > max)
 			{
-				max = (uint16_t)(fftOutput[j] / 1000);
+				max = (uint16_t)(fftOutput[j] / (200 + 40 * (256 - sensitivity)));
 			}
 		}
 

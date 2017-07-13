@@ -20,7 +20,7 @@
 void mic_init(void);
 
 // Gets the spectrum of the current sound recorded by the microphone, The array size of "spectrum" must be 10
-void mic_getSpectrum(uint8_t * spectrum);
+void mic_getSpectrum(uint8_t * spectrum, uint8_t sensitivity);
 
 
 #endif /* LIB_MIC_H_ */
