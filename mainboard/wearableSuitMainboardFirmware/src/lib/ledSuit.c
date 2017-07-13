@@ -443,6 +443,25 @@ void ledSuit_colorChestPixelRgb(uint8_t x, uint8_t y, uint8_t red, uint8_t green
 	if (update) _updateChest(); // Write the configuration in the _chest structure to the LED strip
 }
 
+// Displays a spectrum on the chest
+void ledSuit_displaySpectrum(uint8_t * spectrum, uint8_t update)
+{
+	for (uint8_t x = 0; x < CHEST_WIDTH; x++)
+	{
+		for (uint8_t y = 0; y < CHEST_HEIGHT; y++)
+		{
+			if (spectrum[x] > (250 / CHEST_HEIGHT) * (CHEST_HEIGHT - y))
+			{
+				ledSuit_colorChestPixelRgb(x, y, spectrum[x], spectrum[x], 255 - spectrum[x], update);
+			}
+			else
+			{
+				ledSuit_colorChestPixelRgb(x, y, 0, 0, 0, update);
+			}
+		}
+	}
+}
+
 // Shifts (rotate == 0) or rotates (rotate != 0) an array (For a shift operation shiftColor is used as new first/last led color)
 void _shiftRotateLedArray(uint16_t length, rgbLed * arrayPointer, direction direction, uint8_t rotate, rgbLed shiftColor)
 {

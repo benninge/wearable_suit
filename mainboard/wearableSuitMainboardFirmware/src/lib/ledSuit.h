@@ -96,6 +96,8 @@ void ledSuit_colorFade(uint8_t bodyPart, uint8_t colorCount, rgbLed * colors, ui
 
 // Colors a pixel of the chest display with an RGB value
 void ledSuit_colorChestPixelRgb(uint8_t x, uint8_t y, uint8_t red, uint8_t green, uint8_t blue, uint8_t update);
+// Displays a spectrum on the chest
+void ledSuit_displaySpectrum(uint8_t * spectrum, uint8_t update);
 
 // Rotates the colors of a body part in the given direction
 void ledSuit_Rotate(uint8_t bodyPart, direction direction, uint8_t update);
