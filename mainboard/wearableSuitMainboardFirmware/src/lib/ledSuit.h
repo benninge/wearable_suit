@@ -13,12 +13,16 @@
 
 
 // Length of arms and legs
-#define ARM_LENGTH 150
+#define ARM_LENGTH 100
 #define LEG_LENGTH 3
 #define LEFT_ARM_LENGTH ARM_LENGTH
 #define RIGHT_ARM_LENGTH ARM_LENGTH
 #define LEFT_LEG_LENGTH LEG_LENGTH
 #define RIGHT_LEG_LENGTH LEG_LENGTH
+
+// Dimensions of the chest display
+#define CHEST_HEIGHT 10
+#define CHEST_WIDTH 10
 
 
 // Body parts
@@ -26,7 +30,8 @@
 #define RIGHT_ARM 0x02
 #define LEFT_LEG 0x04
 #define RIGHT_LEG 0x08
-#define WHOLE_SUIT (LEFT_ARM + RIGHT_ARM + LEFT_LEG + RIGHT_LEG)
+#define CHEST 0x10
+#define WHOLE_SUIT (LEFT_ARM + RIGHT_ARM + LEFT_LEG + RIGHT_LEG + CHEST)
 
 
 typedef enum
@@ -88,6 +93,9 @@ void ledSut_colorRgbLed(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount
 void ledSut_colorArray(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed * leds, uint8_t update);
 // Colors a body part with a color fade of 2 to 10 colors
 void ledSuit_colorFade(uint8_t bodyPart, uint8_t colorCount, rgbLed * colors, uint8_t update);
+
+// Colors a pixel of the chest display with an RGB value
+void ledSuit_colorChestPixelRgb(uint8_t x, uint8_t y, uint8_t red, uint8_t green, uint8_t blue, uint8_t update);
 
 // Rotates the colors of a body part in the given direction
 void ledSuit_Rotate(uint8_t bodyPart, direction direction, uint8_t update);

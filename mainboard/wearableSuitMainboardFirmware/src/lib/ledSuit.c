@@ -10,16 +10,19 @@
 
 // Channel and start index of the LED strips of the left arm
 #define LEFT_ARM_CHANNEL 1
-#define LEFT_ARM_START 0
+#define LEFT_ARM_START 100
 // Channel and start index of the LED strips of the right arm
 #define RIGHT_ARM_CHANNEL 1
-#define RIGHT_ARM_START 150
+#define RIGHT_ARM_START 200
 // Channel and start index of the LED strips of the left leg
 #define LEFT_LEG_CHANNEL 2
 #define LEFT_LEG_START 0
 // Channel and start index of the LED strips of the right leg
 #define RIGHT_LEG_CHANNEL 2
 #define RIGHT_LEG_START 3
+// Channel and start index of the LED strips of the chest
+#define CHEST_CHANNEL 1
+#define CHEST_START 0
 
 
 // Auto rotate structure
@@ -61,6 +64,17 @@ typedef struct
 	autoColorFadeStruct autoColorFadeState;
 } leg;
 
+// Chest structure
+typedef struct
+{
+	uint8_t enabled;
+	rgbLed leds[CHEST_WIDTH][CHEST_HEIGHT];
+	uint8_t brightness;
+	uint8_t strobeEnabled;
+	autoRotateStruct autoRotateState;
+	autoColorFadeStruct autoColorFadeState;
+} chest;
+
 
 // Lookup table which contains the RGB values for different colors
 const rgbLed _colorLut[ledColorEnumSize] = {
@@ -79,6 +93,7 @@ const rgbLed _colorLut[ledColorEnumSize] = {
 // Variables containing the LED suit status
 arm _leftArm, _rightArm;
 leg _leftLeg, _rightLeg;
+chest _chest;
 uint8_t _strobePeriod; // in 2ms (starting with 0)
 
 
@@ -163,6 +178,38 @@ void _updateRightLeg()
 	}
 }
 
+// Writes the configuration in the _rightLeg structure to the LED strip
+void _updateChest()
+{
+	if (_chest.enabled)
+	{
+		for (uint8_t y = 0; y < CHEST_HEIGHT; y++)
+		{
+			for (uint8_t x = 0; x < CHEST_WIDTH; x++)
+			{
+				uint8_t red = (uint16_t)_chest.leds[x][y].r * _chest.brightness / 255;
+				uint8_t green = (uint16_t)_chest.leds[x][y].g * _chest.brightness / 255;
+				uint8_t blue = (uint16_t)_chest.leds[x][y].b * _chest.brightness / 255;
+
+				uint16_t localIndex = 0;
+				if (y % 2) // Uneven row
+				{
+					localIndex = (CHEST_WIDTH * (CHEST_HEIGHT - 1 - y)) + (x);
+				}
+				else // Even row
+				{
+					localIndex = (CHEST_WIDTH * (CHEST_HEIGHT - 1 - y)) + (CHEST_WIDTH - 1 - x);
+				}
+				ws2812_setLedsRGB(CHEST_CHANNEL, CHEST_START + localIndex, 1, red, green, blue); // Set LED color
+			}
+		}
+	}
+	else
+	{
+		ws2812_switchLedsOff(CHEST_CHANNEL, CHEST_START, CHEST_HEIGHT * CHEST_WIDTH);  // switch chest LEDs off
+	}
+}
+
 
 // Initializes the LED suit with all LEDs switched off (all LEDs are enabled with color (0, 0, 0))
 void ledSuit_init(void)
@@ -188,7 +235,7 @@ void ledSuit_init(void)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); // Enable clock for timer
 	TIM_TimeBaseInitTypeDef  timerInitStructure;
 	TIM_TimeBaseStructInit(&timerInitStructure); // Initialize timer initialization structure with default values
-	timerInitStructure.TIM_Period = SystemCoreClock/50 - 1;  // Timer period 20ms
+	timerInitStructure.TIM_Period = SystemCoreClock / 50 - 1;  // Timer period 20ms
 	TIM_TimeBaseInit(TIM2, &timerInitStructure); // Initialize timer
 	// Initialize timer interrupt
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -197,10 +244,10 @@ void ledSuit_init(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 10; // Low priority
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; // Enable interrupt
 	NVIC_Init(&NVIC_InitStructure); // Initialize timer interrupt
-	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // Enable timer update interrupt
 	TIM_ClearITPendingBit(TIM2, TIM_IT_Update); // Clear interrupt flag
+	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE); // Enable timer update interrupt
 
-	// start timer for automatic coloring functions
+	// Start timer for automatic coloring functions
 	TIM_Cmd(TIM2, ENABLE);
 }
 
@@ -217,6 +264,7 @@ void ledSuit_update(uint8_t bodyPart)
 	if (bodyPart & RIGHT_ARM) _updateRightArm(); // Write the configuration in the _rightArm structure to the LED strip
 	if (bodyPart & LEFT_LEG) _updateLeftLeg(); // Write the configuration in the _leftLeg structure to the LED strip
 	if (bodyPart & RIGHT_LEG) _updateRightLeg(); // Write the configuration in the _rightLeg structure to the LED strip
+	if (bodyPart & CHEST) _updateChest(); // Write the configuration in the _chest structure to the LED strip
 }
 
 // Enables (enabled != 0) or disables (enabled == 0) the LEDs of a body part
@@ -226,6 +274,7 @@ void ledSuit_enable(uint8_t bodyPart, uint8_t enabled, uint8_t update)
 	if (bodyPart & RIGHT_ARM) _rightArm.enabled = enabled; // Update the enabled value in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _leftLeg.enabled = enabled; // Update the enabled value in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _rightLeg.enabled = enabled; // Update the enabled value in the _rightLeg structure
+	if (bodyPart & CHEST) _chest.enabled = enabled; // Update the enabled value in the _chest structure
 
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
 }
@@ -237,6 +286,7 @@ uint8_t ledSuit_getEnabled(uint8_t bodyPart)
 	if (bodyPart & RIGHT_ARM) return _rightArm.enabled;
 	if (bodyPart & LEFT_LEG) return _leftLeg.enabled;
 	if (bodyPart & RIGHT_LEG) return _rightLeg.enabled;
+	if (bodyPart & CHEST) return _chest.enabled;
 	return 0; // Body part doesn't exist
 }
 
@@ -247,6 +297,7 @@ void ledSuit_setBrightness(uint8_t bodyPart, uint8_t brightness, uint8_t update)
 	if (bodyPart & RIGHT_ARM) _rightArm.brightness = brightness; // Update the brightness value in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _leftLeg.brightness = brightness; // Update the brightness value in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _rightLeg.brightness = brightness; // Update the brightness value in the _rightLeg structure
+	if (bodyPart & CHEST) _chest.brightness = brightness; // Update the brightness value in the _chest structure
 
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
 }
@@ -258,6 +309,7 @@ uint8_t ledSuit_getBrightness(uint8_t bodyPart)
 	if (bodyPart & RIGHT_ARM) return _rightArm.brightness;
 	if (bodyPart & LEFT_LEG) return _leftLeg.brightness;
 	if (bodyPart & RIGHT_LEG) return _rightLeg.brightness;
+	if (bodyPart & CHEST) return _chest.brightness;
 	return 0; // Body part doesn't exist
 }
 
@@ -273,6 +325,21 @@ void _colorArrayRGB(uint16_t length, rgbLed * arrayPointer, uint8_t red, uint8_t
 	}
 }
 
+// Colors rows of the chest with an RGB value
+void _colorChestArrayRGB(uint16_t length, uint16_t startIndex, uint8_t red, uint8_t green, uint8_t blue)
+{
+	// Update the color values in the array
+	for (uint16_t i = 0; i < length; i++)
+	{
+		for (uint8_t x = 0; x < CHEST_WIDTH; x++)
+		{
+			_chest.leds[x][i + startIndex].r = red;
+			_chest.leds[x][i + startIndex].g = green;
+			_chest.leds[x][i + startIndex].b = blue;
+		}
+	}
+}
+
 // Colors a number of LEDs with an RGB value (ledCount == 0 colors the whole body part)
 void ledSuit_colorRgb(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, uint8_t red, uint8_t green, uint8_t blue, uint8_t update)
 {
@@ -282,6 +349,7 @@ void ledSuit_colorRgb(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, 
 		if (bodyPart & RIGHT_ARM) _colorArrayRGB(ledCount, &_rightArm.leds[startIndex], red, green, blue); // Update the color values in the _rightArm structure
 		if (bodyPart & LEFT_LEG) _colorArrayRGB(ledCount, &_leftLeg.leds[startIndex], red, green, blue); // Update the color values in the _leftLeg structure
 		if (bodyPart & RIGHT_LEG) _colorArrayRGB(ledCount, &_rightLeg.leds[startIndex], red, green, blue); // Update the color values in the _rightLeg structure
+		if (bodyPart & CHEST) _colorChestArrayRGB(ledCount, startIndex, red, green, blue); // Update the color values in the _chest structure
 	}
 	else // Color the whole body part
 	{
@@ -289,6 +357,7 @@ void ledSuit_colorRgb(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, 
 		if (bodyPart & RIGHT_ARM) _colorArrayRGB(RIGHT_ARM_LENGTH, _rightArm.leds, red, green, blue); // Update the color values in the _rightArm structure
 		if (bodyPart & LEFT_LEG) _colorArrayRGB(LEFT_LEG_LENGTH, _leftLeg.leds, red, green, blue); // Update the color values in the _leftLeg structure
 		if (bodyPart & RIGHT_LEG) _colorArrayRGB(RIGHT_LEG_LENGTH, _rightLeg.leds, red, green, blue); // Update the color values in the _rightLeg structure
+		if (bodyPart & CHEST) _colorChestArrayRGB(CHEST_HEIGHT, 0, red, green, blue); // Update the color values in the _chest structure
 	}
 
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
@@ -353,8 +422,25 @@ void ledSuit_colorFade(uint8_t bodyPart, uint8_t colorCount, rgbLed * colors, ui
 	if (bodyPart & RIGHT_ARM) _colorLedArrayPartMultipleColorFade(RIGHT_ARM_LENGTH, _rightArm.leds, colorCount, colors); // Update the color values in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _colorLedArrayPartMultipleColorFade(LEFT_LEG_LENGTH, _leftLeg.leds, colorCount, colors); // Update the color values in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _colorLedArrayPartMultipleColorFade(RIGHT_LEG_LENGTH, _rightLeg.leds, colorCount, colors); // Update the color values in the _rightLeg structure
+	if (bodyPart & CHEST)
+	{
+		for (uint8_t i = 0; i < CHEST_WIDTH; i++) // Loop through all rows
+		{
+			_colorLedArrayPartMultipleColorFade(CHEST_HEIGHT, &_chest.leds[i][0], colorCount, colors); // Update the color values for a row in the _chest structure
+		}
+	}
 
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
+}
+
+// Colors a pixel of the chest display with an RGB value
+void ledSuit_colorChestPixelRgb(uint8_t x, uint8_t y, uint8_t red, uint8_t green, uint8_t blue, uint8_t update)
+{
+	_chest.leds[x][y].r = red;
+	_chest.leds[x][y].g = green;
+	_chest.leds[x][y].b = blue;
+
+	if (update) _updateChest(); // Write the configuration in the _chest structure to the LED strip
 }
 
 // Shifts (rotate == 0) or rotates (rotate != 0) an array (For a shift operation shiftColor is used as new first/last led color)
@@ -408,6 +494,13 @@ void ledSuit_Rotate(uint8_t bodyPart, direction direction, uint8_t update)
 	if (bodyPart & RIGHT_ARM) _shiftRotateLedArray(RIGHT_ARM_LENGTH, _rightArm.leds, direction, 1, _colorLut[black]); // Update the color values in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _shiftRotateLedArray(LEFT_LEG_LENGTH, _leftLeg.leds, direction, 1, _colorLut[black]); // Update the color values in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _shiftRotateLedArray(RIGHT_LEG_LENGTH, _rightLeg.leds, direction, 1, _colorLut[black]); // Update the color values in the _rightLeg structure
+	if (bodyPart & CHEST)
+	{
+		for (uint8_t i = 0; i < CHEST_WIDTH; i++) // Loop through all rows
+		{
+			_shiftRotateLedArray(CHEST_HEIGHT, &_chest.leds[i][0], direction, 1, _colorLut[black]); // Update the color values for a row in the _chest structure
+		}
+	}
 
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
 }
@@ -419,6 +512,13 @@ void ledSuit_Shift(uint8_t bodyPart, direction direction, rgbLed shiftColor, uin
 	if (bodyPart & RIGHT_ARM) _shiftRotateLedArray(RIGHT_ARM_LENGTH, _rightArm.leds, direction, 0, shiftColor); // Update the color values in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _shiftRotateLedArray(LEFT_LEG_LENGTH, _leftLeg.leds, direction, 0, shiftColor); // Update the color values in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _shiftRotateLedArray(RIGHT_LEG_LENGTH, _rightLeg.leds, direction, 0, shiftColor); // Update the color values in the _rightLeg structure
+	if (bodyPart & CHEST)
+	{
+		for (uint8_t i = 0; i < CHEST_WIDTH; i++) // Loop through all rows
+		{
+			_shiftRotateLedArray(CHEST_HEIGHT, &_chest.leds[i][0], direction, 0, shiftColor); // Update the color values for a row in the _chest structure
+		}
+	}
 
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip
 }
@@ -436,6 +536,7 @@ void ledSuit_enableStrobe(uint8_t bodyPart, uint8_t enabled)
 	if (bodyPart & RIGHT_ARM) _rightArm.strobeEnabled = enabled; // Update the strobe enabled value in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _leftLeg.strobeEnabled = enabled; // Update the strobe enabled value in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _rightLeg.strobeEnabled = enabled; // Update the strobe enabled value in the _rightLeg structure
+	if (bodyPart & CHEST) _chest.strobeEnabled = enabled; // Update the strobe enabled value in the _chest structure
 }
 
 // Returns the enabled state (enabled != 0) of the body parts strobe function (for multiple body parts, the first in the list above is selected)
@@ -445,6 +546,7 @@ uint8_t ledSuit_getStrobeEnabledState(uint8_t bodyPart)
 	if (bodyPart & RIGHT_ARM) return _rightArm.strobeEnabled;
 	if (bodyPart & LEFT_LEG) return _leftLeg.strobeEnabled;
 	if (bodyPart & RIGHT_LEG) return _rightLeg.strobeEnabled;
+	if (bodyPart & CHEST) return _chest.strobeEnabled;
 	return 0; // Body part doesn't exist
 }
 
@@ -461,6 +563,7 @@ void ledSuit_enableAutoRotate(uint8_t bodyPart, uint8_t enabled)
 	if (bodyPart & RIGHT_ARM) _rightArm.autoRotateState.enabled = enabled; // Update the auto rotate enabled value in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _leftLeg.autoRotateState.enabled = enabled; // Update the auto rotate enabled value in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _rightLeg.autoRotateState.enabled = enabled; // Update the auto rotate enabled value in the _rightLeg structure
+	if (bodyPart & CHEST) _chest.autoRotateState.enabled = enabled; // Update the auto rotate enabled value in the _chest structure
 }
 
 // Returns the enabled state (enabled != 0) of the body parts auto rotate function (for multiple body parts, the first in the list above is selected)
@@ -470,6 +573,7 @@ uint8_t ledSuit_getAutoRotateEnabledState(uint8_t bodyPart)
 	if (bodyPart & RIGHT_ARM) return _rightArm.autoRotateState.enabled;
 	if (bodyPart & LEFT_LEG) return _leftLeg.autoRotateState.enabled;
 	if (bodyPart & RIGHT_LEG) return _rightLeg.autoRotateState.enabled;
+	if (bodyPart & CHEST) return _chest.autoRotateState.enabled;
 	return 0; // Body part doesn't exist
 }
 
@@ -496,6 +600,11 @@ void ledSuit_configureAutoRotate(uint8_t bodyPart, direction direction, uint8_t 
 		_rightLeg.autoRotateState.direction = direction; // Update the auto rotate direction value in the _rightLeg structure
 		_rightLeg.autoRotateState.speed = speed; // Update the auto rotate speed value in the _rightLeg structure
 	}
+	if (bodyPart & CHEST)
+	{
+		_chest.autoRotateState.direction = direction; // Update the auto rotate direction value in the _chest structure
+		_chest.autoRotateState.speed = speed; // Update the auto rotate speed value in the _chest structure
+	}
 }
 
 // Enables ((enabled != 0) or disables (enabled == 0) the auto color fade function of a body part
@@ -505,6 +614,7 @@ void ledSuit_enableAutoColorFade(uint8_t bodyPart, uint8_t enabled)
 	if (bodyPart & RIGHT_ARM) _rightArm.autoColorFadeState.enabled = enabled; // Update the auto color fade enabled value in the _rightArm structure
 	if (bodyPart & LEFT_LEG) _leftLeg.autoColorFadeState.enabled = enabled; // Update the auto color fade enabled value in the _leftLeg structure
 	if (bodyPart & RIGHT_LEG) _rightLeg.autoColorFadeState.enabled = enabled; // Update the auto color fade enabled value in the _rightLeg structure
+	if (bodyPart & CHEST) _chest.autoColorFadeState.enabled = enabled; // Update the auto color fade enabled value in the _chest structure
 }
 
 // Returns the enabled state (enabled != 0) of the body parts auto color fade function (for multiple body parts, the first in the list above is selected)
@@ -514,6 +624,7 @@ uint8_t ledSuit_getAutoColorFadeEnabledState(uint8_t bodyPart)
 	if (bodyPart & RIGHT_ARM) return _rightArm.autoColorFadeState.enabled;
 	if (bodyPart & LEFT_LEG) return _leftLeg.autoColorFadeState.enabled;
 	if (bodyPart & RIGHT_LEG) return _rightLeg.autoColorFadeState.enabled;
+	if (bodyPart & CHEST) return _chest.autoColorFadeState.enabled;
 	return 0; // Body part doesn't exist
 }
 
@@ -552,6 +663,11 @@ void ledSuit_configureAutoColorFade(uint8_t bodyPart, uint8_t colorCount, rgbLed
 		_setAutoColorFadeStructureColorValues(&_rightLeg.autoColorFadeState, colorCount, colors); // Update the auto color fade colors in the _rightLeg structure
 		_rightLeg.autoColorFadeState.speed = speed; // Update the auto color fade speed value in the _rightLeg structure
 	}
+	if (bodyPart & CHEST)
+	{
+		_setAutoColorFadeStructureColorValues(&_chest.autoColorFadeState, colorCount, colors); // Update the auto color fade colors in the _chest structure
+		_chest.autoColorFadeState.speed = speed; // Update the auto color fade speed value in the _chest structure
+	}
 }
 
 // Synchronizes the auto color fade functions of all body parts (for a synchronous operation, all body parts have to be configured with the same speed)
@@ -561,7 +677,7 @@ void ledSuit_synchronizeAutoColorFade()
 }
 
 
-#define BODY_PART_COUNT 4 // Total number of body parts (used for looping through all body parts)
+#define BODY_PART_COUNT 5 // Total number of body parts (used for looping through all body parts)
 
 // Returns the body part corresponding to an index (used for looping through all body parts)
 uint8_t _indexToBodyPart(uint8_t index)
@@ -572,6 +688,7 @@ uint8_t _indexToBodyPart(uint8_t index)
 	case 1: return RIGHT_ARM;
 	case 2: return LEFT_LEG;
 	case 3: return RIGHT_LEG;
+	case 4: return CHEST;
 	default: return 0; // body part doesn't exist
 	}
 }
@@ -592,6 +709,7 @@ void _strobe()
 		if (_rightArm.strobeEnabled) ledSuit_enable(RIGHT_ARM, !ledSuit_getEnabled(RIGHT_ARM), 1);
 		if (_leftLeg.strobeEnabled) ledSuit_enable(LEFT_LEG, !ledSuit_getEnabled(LEFT_LEG), 1);
 		if (_rightLeg.strobeEnabled) ledSuit_enable(RIGHT_LEG, !ledSuit_getEnabled(RIGHT_LEG), 1);
+		if (_chest.strobeEnabled) ledSuit_enable(CHEST, !ledSuit_getEnabled(CHEST), 1);
 
 		strobeCounter = 0; // Reset strobe counter
 	}
@@ -608,6 +726,7 @@ autoRotateStruct _getAutoRotateStruct(uint8_t bodyPart)
 	case RIGHT_ARM: return _rightArm.autoRotateState;
 	case LEFT_LEG: return _leftLeg.autoRotateState;
 	case RIGHT_LEG: return _rightLeg.autoRotateState;
+	case CHEST: return _chest.autoRotateState;
 	}
 }
 
@@ -646,6 +765,7 @@ autoColorFadeStruct _getBodyPartAutoColorFadeStruct(uint8_t bodyPart)
 	case RIGHT_ARM: return _rightArm.autoColorFadeState;
 	case LEFT_LEG: return _leftLeg.autoColorFadeState;
 	case RIGHT_LEG: return _rightLeg.autoColorFadeState;
+	case CHEST: return _chest.autoColorFadeState;
 	}
 }
 
