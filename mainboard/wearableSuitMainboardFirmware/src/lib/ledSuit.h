@@ -13,8 +13,8 @@
 
 
 // Length of arms and legs
-#define ARM_LENGTH 100
-#define LEG_LENGTH 3
+#define ARM_LENGTH 30
+#define LEG_LENGTH 40
 #define LEFT_ARM_LENGTH ARM_LENGTH
 #define RIGHT_ARM_LENGTH ARM_LENGTH
 #define LEFT_LEG_LENGTH LEG_LENGTH

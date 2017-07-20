@@ -9,19 +9,19 @@
 
 
 // Channel and start index of the LED strips of the left arm
-#define LEFT_ARM_CHANNEL 1
-#define LEFT_ARM_START 100
+#define LEFT_ARM_CHANNEL 3
+#define LEFT_ARM_START 0
 // Channel and start index of the LED strips of the right arm
-#define RIGHT_ARM_CHANNEL 1
-#define RIGHT_ARM_START 200
+#define RIGHT_ARM_CHANNEL 4
+#define RIGHT_ARM_START 100
 // Channel and start index of the LED strips of the left leg
-#define LEFT_LEG_CHANNEL 2
+#define LEFT_LEG_CHANNEL 1
 #define LEFT_LEG_START 0
 // Channel and start index of the LED strips of the right leg
 #define RIGHT_LEG_CHANNEL 2
-#define RIGHT_LEG_START 3
+#define RIGHT_LEG_START 0
 // Channel and start index of the LED strips of the chest
-#define CHEST_CHANNEL 1
+#define CHEST_CHANNEL 4
 #define CHEST_START 0
 
 
