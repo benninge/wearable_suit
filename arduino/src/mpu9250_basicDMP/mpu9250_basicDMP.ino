@@ -38,7 +38,7 @@ int fAvailable ()
 int ret;
 void setup() {
     Fastwire::setup(400,0);
-    Serial.begin(38400);
+    Serial.begin(57600);
     ret = mympu_open(100);
     pinMode (ENABLE_PIN, OUTPUT);  // driver output enable
     digitalWrite (ENABLE_PIN, LOW);
@@ -70,17 +70,17 @@ void loop() {
 			return;  // sender not master
 
 
-		  ypr0.f = 10;
-		  ypr1.f = 20;
-		  ypr2.f = 30;
-		  gyro0.f = 40;
-		  gyro1.f = 50;
-		  gyro2.f = 60;
-		  accel0.f = 70;
-		  accel1.f = 80;
-		  accel2.f = 90;
+		  ypr0.f = 10 + SLAVE_ID;
+		  ypr1.f = 20 + SLAVE_ID;
+		  ypr2.f = 30 + SLAVE_ID;
+		  gyro0.f = 40 + SLAVE_ID;
+		  gyro1.f = 50 + SLAVE_ID;
+		  gyro2.f = 60+ SLAVE_ID;
+		  accel0.f = 70 + SLAVE_ID;
+		  accel1.f = 80 + SLAVE_ID;
+		  accel2.f = 90 + SLAVE_ID;
 
-		  delay (2);  // give the master a moment to prepare to receive
+		  //delay (1);  // give the master a moment to prepare to receive
 
 		  byte msg [] = {
 			 0,  // send to master
