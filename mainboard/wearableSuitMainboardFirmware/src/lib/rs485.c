@@ -56,7 +56,10 @@ PERMISSION TO DISTRIBUTE
 
 bool have_stx = false;
 bool have_etx = false;
+uint8_t debug_sending = 0;
 uint8_t decoded_string[MAX_STRLEN+1];
+uint32_t debugcounterBad = 0;
+uint32_t debugcounterGood = 0;
 
 // Sensor Data structure
 typedef struct
@@ -103,6 +106,24 @@ void rs485_init(uint32_t baudRate) {
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_USART1);
 	GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_USART1);
 
+	// Setup DE pin
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_ResetBits(GPIOB, GPIO_Pin_5);
+
+	// Setup /RE pin
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_ResetBits(GPIOB, GPIO_Pin_4);
+
     // USART Config
 	USART_InitStructure.USART_BaudRate = baudRate;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
@@ -123,15 +144,6 @@ void rs485_init(uint32_t baudRate) {
 
   /* Enable the USART */
 	USART_Cmd(USART1, ENABLE);
-
-	// Setup Enable pin
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-    GPIO_ResetBits(GPIOB, GPIO_Pin_5);
 }
 
 void USART_puts(USART_TypeDef* USARTx, uint8_t s){
@@ -200,7 +212,11 @@ void rs485_requestSensorData(sensorPart sensor) {
 	uint8_t msg[3];
 
 	//Enable sending
+	//USART_ClearFlag(USART1, USART_IT_RXNE);
+	//USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
 	GPIO_SetBits(GPIOB, GPIO_Pin_5);
+	GPIO_SetBits(GPIOB, GPIO_Pin_4);
+	debug_sending = 1;
 	//TODO: add delay here?
 	Delay(1);
 	switch (sensor) {
@@ -231,6 +247,9 @@ void rs485_requestSensorData(sensorPart sensor) {
 	}
 	//Disable sending
 	GPIO_ResetBits(GPIOB, GPIO_Pin_5);
+	GPIO_ResetBits(GPIOB, GPIO_Pin_4);
+	debug_sending = 0;
+	//USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 }
 
 void rs485_updateSensorData(){
@@ -259,6 +278,12 @@ void rs485_updateSensorData(){
 		float debugyaccel1 = Sensor_arm_left.accel1.f;
 		float debugyaccel2 = Sensor_arm_left.accel2.f;
 		int debug = 1;
+		debugcounterGood++;
+		if (debugcounterGood >= 90) {
+			uint32_t debug2 = debugcounterBad;
+			uint32_t debug3 = debugcounterGood;
+			int debug = 1;
+		}
 #endif
 
 		rs485_complete_string = false;
@@ -268,7 +293,7 @@ void rs485_updateSensorData(){
 void USART1_IRQHandler(void){
 
 	// check if the USART1 receive interrupt flag was set
-	if( USART_GetITStatus(USART1, USART_IT_RXNE) ){
+	if( USART_GetITStatus(USART1, USART_IT_RXNE)){
 
 		static uint8_t cnt = 0; // this counter is used to determine the string length
 		static bool first_nibble = false;
@@ -296,9 +321,10 @@ void USART1_IRQHandler(void){
 					break;
 				}
 		        // check if t is in valid form (4 bits followed by 4 bits complemented)
-		        if ((t >> 4) != ((t & 0x0F) ^ 0x0F) )
+		        if ((t >> 4) != ((t & 0x0F) ^ 0x0F) ) {
 		            bad_packet = true;  // bad byte
-
+		        	debugcounterBad++;
+		        }
 		        t >>= 4; //remove complemented bits
 		        // high-order nibble?
 		        if (first_nibble) {
@@ -316,6 +342,7 @@ void USART1_IRQHandler(void){
 		        if (have_etx) {
 		            if (crc8 (decoded_string, cnt) != curr_byte) {
 		            	bad_packet = true;
+			        	debugcounterBad++;
 		            } else if (!bad_packet) {
 		            	//good and complete packet
 		            	//TODO: adapt for up to 4 bodyparts
@@ -330,6 +357,7 @@ void USART1_IRQHandler(void){
 		            decoded_string[cnt++] = curr_byte;
 		        } else {
 		            bad_packet = true;
+		        	debugcounterBad++;
 		        }
 		        break;
 		}
@@ -341,4 +369,3 @@ void USART1_IRQHandler(void){
 		USART_ClearFlag(USART1, USART_IT_RXNE);
 	}
 }
-
