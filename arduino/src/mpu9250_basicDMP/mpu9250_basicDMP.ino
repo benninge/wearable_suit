@@ -5,7 +5,8 @@
 
 //#define DMP_DEBUG
 
-const byte ENABLE_PIN = 7;
+const byte ENABLE_PIN = 3;
+const byte RECEIVE_PIN = 4;
 const byte SLAVE_ID = 1;
 union float2bytes { float f; byte b[sizeof(float)]; };
 float2bytes ypr0;
@@ -40,8 +41,10 @@ void setup() {
     Fastwire::setup(400,0);
     Serial.begin(57600);
     ret = mympu_open(100);
-    pinMode (ENABLE_PIN, OUTPUT);  // driver output enable
+    pinMode (ENABLE_PIN, OUTPUT);
+    pinMode (RECEIVE_PIN, OUTPUT);// driver output enable
     digitalWrite (ENABLE_PIN, LOW);
+    digitalWrite (RECEIVE_PIN, LOW);
 
 #ifdef DMP_DEBUG
     Serial.print("MPU init: "); Serial.println(ret);
@@ -124,10 +127,12 @@ void loop() {
 		  };
 
 		  digitalWrite (ENABLE_PIN, HIGH);  // enable sending
+		  digitalWrite (RECEIVE_PIN, HIGH);  // enable sending
 		  delay(1);
 		  sendMsg (fWrite, msg, sizeof msg);
 		  Serial.flush();
 		  digitalWrite (ENABLE_PIN, LOW);  // disable sending
+		  digitalWrite (RECEIVE_PIN, LOW);  // disable sending
 		  //delay (100);
 
      }
