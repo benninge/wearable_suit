@@ -77,7 +77,7 @@ SensorData Sensor_leg_right;
 
 void Delay(uint32_t time)
 {
-	time *= 10000;
+	time *= 10;
 	while(time--);
 }
 
@@ -144,6 +144,35 @@ void rs485_init(uint32_t baudRate) {
 
   /* Enable the USART */
 	USART_Cmd(USART1, ENABLE);
+
+	// Initialize timer for automatic sensor requests
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE); // Enable clock for timer
+	TIM_TimeBaseInitTypeDef  timerInitStructure;
+	TIM_TimeBaseStructInit(&timerInitStructure); // Initialize timer initialization structure with default values
+	timerInitStructure.TIM_Prescaler = 84;
+	timerInitStructure.TIM_Period = 50000;
+	TIM_TimeBaseInit(TIM5, &timerInitStructure); // Initialize timer
+	// Initialize timer interrupt
+	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn; // Timer 2 interrupt
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 9; // Low priority
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 9; // Low priority
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; // Enable interrupt
+	NVIC_Init(&NVIC_InitStructure); // Initialize timer interrupt
+	TIM_ClearITPendingBit(TIM5, TIM_IT_Update); // Clear interrupt flag
+	TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE); // Enable timer update interrupt
+
+	// Start timer for automatic coloring functions
+	TIM_Cmd(TIM5, ENABLE);
+}
+// Timer 5 interrupt handler
+void TIM5_IRQHandler(void)
+{
+	static uint8_t counter = 0;
+	if (TIM_GetITStatus(TIM5, TIM_IT_Update)) // Timer update interrupt
+	{
+	  rs485_requestSensorData(leftArmSensor);
+	  TIM_ClearITPendingBit(TIM5, TIM_IT_Update); // Clear interrupt flag
+	}
 }
 
 void USART_puts(USART_TypeDef* USARTx, uint8_t s){
@@ -199,7 +228,7 @@ void rs485_sendMsg (const uint8_t * data, const uint8_t length)
 {
 	//uint8_t STX = '\2';
 	//uint8_t ETX = '\3';
-
+	//TODO: change to one USART_puts per message
 	USART_puts(USART1, '\2' );
 	for (uint8_t i = 0; i < length; i++)
 		sendComplemented (data [i]);
@@ -217,8 +246,8 @@ void rs485_requestSensorData(sensorPart sensor) {
 	GPIO_SetBits(GPIOB, GPIO_Pin_5);
 	GPIO_SetBits(GPIOB, GPIO_Pin_4);
 	debug_sending = 1;
-	//TODO: add delay here?
-	Delay(1);
+
+	Delay(1000);
 	switch (sensor) {
 
 		case leftArmSensor:
@@ -279,7 +308,7 @@ void rs485_updateSensorData(){
 		float debugyaccel2 = Sensor_arm_left.accel2.f;
 		int debug = 1;
 		debugcounterGood++;
-		if (debugcounterGood >= 90) {
+		if (debugcounterGood >= 100) {
 			uint32_t debug2 = debugcounterBad;
 			uint32_t debug3 = debugcounterGood;
 			int debug = 1;

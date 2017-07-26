@@ -73,15 +73,15 @@ void loop() {
 			return;  // sender not master
 
 
-		  ypr0.f = 10 + SLAVE_ID;
-		  ypr1.f = 20 + SLAVE_ID;
-		  ypr2.f = 30 + SLAVE_ID;
-		  gyro0.f = 40 + SLAVE_ID;
-		  gyro1.f = 50 + SLAVE_ID;
-		  gyro2.f = 60+ SLAVE_ID;
-		  accel0.f = 70 + SLAVE_ID;
-		  accel1.f = 80 + SLAVE_ID;
-		  accel2.f = 90 + SLAVE_ID;
+		  ypr0.f = mympu.ypr[0];
+		  ypr1.f = mympu.ypr[1];
+		  ypr2.f = mympu.ypr[2];
+		  gyro0.f = mympu.gyro[0];
+		  gyro1.f = mympu.gyro[1];
+		  gyro2.f = mympu.gyro[2];
+		  accel0.f = mympu.accel[0];
+		  accel1.f = mympu.accel[1];
+		  accel2.f = mympu.accel[2];
 
 		  //delay (1);  // give the master a moment to prepare to receive
 
