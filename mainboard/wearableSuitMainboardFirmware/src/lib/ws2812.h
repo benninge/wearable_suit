@@ -16,10 +16,10 @@
 #define ENABLE_CHANNEL_3 // Enable ws2812 channel 3 on pin B0
 #define ENABLE_CHANNEL_4 // Enable ws2812 channel 4 on pin B1
 
-#define LED_COUNT_CH1 41 // Number of LEDs in channel 1
-#define LED_COUNT_CH2 41 // Number of LEDs in channel 2
-#define LED_COUNT_CH3 32 // Number of LEDs in channel 3
-#define LED_COUNT_CH4 132 // Number of LEDs in channel 4
+#define LED_COUNT_CH1 42 // Number of LEDs in channel 1
+#define LED_COUNT_CH2 42 // Number of LEDs in channel 2
+#define LED_COUNT_CH3 33 // Number of LEDs in channel 3
+#define LED_COUNT_CH4 133 // Number of LEDs in channel 4
 
 
 // RGB LED structure
