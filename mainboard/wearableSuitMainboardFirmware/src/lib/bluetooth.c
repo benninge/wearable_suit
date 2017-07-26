@@ -6,11 +6,11 @@
  */
 
 #include "bluetooth.h"
+#include "usart.h"
+
 
 // Bluetooth initialization
 void bluetooth_init(void)
 {
-
+	usart_init(9600);
 }
-
-// put your code here

@@ -10,9 +10,9 @@
 
 #include "stm32f4xx.h"
 
-// put your code here
 
 // Bluetooth initialization
 void bluetooth_init(void);
+
 
 #endif /* LIB_BLUETOOTH_H_ */
