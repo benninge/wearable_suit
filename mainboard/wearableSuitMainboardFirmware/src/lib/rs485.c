@@ -156,7 +156,7 @@ void rs485_init(uint32_t baudRate) {
 	TIM_TimeBaseInitTypeDef  timerInitStructure;
 	TIM_TimeBaseStructInit(&timerInitStructure); // Initialize timer initialization structure with default values
 	timerInitStructure.TIM_Prescaler = 84;
-	timerInitStructure.TIM_Period = 100000;
+	timerInitStructure.TIM_Period = 33000;
 	TIM_TimeBaseInit(TIM5, &timerInitStructure); // Initialize timer
 	// Initialize timer interrupt
 	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn; // Timer 2 interrupt
@@ -197,7 +197,7 @@ uint8_t USART_puts(uint16_t length, uint8_t * txData)
 
 	GPIO_SetBits(GPIOB, GPIO_Pin_5);
 	GPIO_SetBits(GPIOB, GPIO_Pin_4);
-	Delay(500);
+	Delay(100);
 	//USART_ITConfig(USART1, USART_IT_RXNE, DISABLE); // Enable USART 1 TX interrupt
 	USART_ITConfig(USART1, USART_IT_TXE, ENABLE); // Enable USART 1 TX interrupt
 	return 0;
@@ -415,15 +415,18 @@ void USART1_IRQHandler(void){
 			if (sendIndexIn == sendIndexOut) // TX buffer empty
 			{
 				USART_ITConfig(USART1, USART_IT_TXE, DISABLE); // Disable USART 1 TX interrupt
-				//USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // Enable USART 1 TX interrupt
-				Delay(500);
-				GPIO_ResetBits(GPIOB, GPIO_Pin_5);
-				GPIO_ResetBits(GPIOB, GPIO_Pin_4);
+				USART_ITConfig(USART1, USART_IT_TC, ENABLE); // Enable USART 1 TC interrupt
 			}
 			else // TX buffer not empty
 			{
 				USART_SendData(USART1, (uint16_t)sendBuffer[sendIndexOut++]); // Send next byte (this automatically clears the interrupt flag)
 				if (sendIndexOut >= TX_BUFFER_SIZE) sendIndexOut = 0; // Set TX buffer index to 0 if the end of the array was reached
 			}
+		}
+	if( USART_GetITStatus(USART1, USART_IT_TC)) // TC interrupt
+		{
+			GPIO_ResetBits(GPIOB, GPIO_Pin_5);
+			GPIO_ResetBits(GPIOB, GPIO_Pin_4);
+			USART_ITConfig(USART1, USART_IT_TC, DISABLE);
 		}
 }
