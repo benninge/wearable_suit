@@ -61,6 +61,12 @@ uint8_t decoded_string[MAX_STRLEN+1];
 uint32_t debugcounterBad = 0;
 uint32_t debugcounterGood = 0;
 
+
+uint8_t sendString[TX_BUFFER_SIZE]; // string to send over usart
+uint8_t sendStringIndex = 0;
+uint8_t sendBuffer[TX_BUFFER_SIZE]; // USART TX ring buffer
+uint16_t sendIndexIn = 0, sendIndexOut = 0; // USART TX ring buffer indexes
+
 // Sensor Data structure
 typedef struct
 {
@@ -150,7 +156,7 @@ void rs485_init(uint32_t baudRate) {
 	TIM_TimeBaseInitTypeDef  timerInitStructure;
 	TIM_TimeBaseStructInit(&timerInitStructure); // Initialize timer initialization structure with default values
 	timerInitStructure.TIM_Prescaler = 84;
-	timerInitStructure.TIM_Period = 50000;
+	timerInitStructure.TIM_Period = 100000;
 	TIM_TimeBaseInit(TIM5, &timerInitStructure); // Initialize timer
 	// Initialize timer interrupt
 	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn; // Timer 2 interrupt
@@ -175,12 +181,26 @@ void TIM5_IRQHandler(void)
 	}
 }
 
-void USART_puts(USART_TypeDef* USARTx, uint8_t s){
-		// wait until data register is empty
-		while( !(USARTx->SR & 0x00000040) );
-		USART_SendData(USARTx, (uint16_t)s);
-		//USARTx->DR = (uint16_t)(s & 0x01FF);
-		while( !(USARTx->SR & 0x00000040) );
+// Writes an array of bytes to the USART (length is the array length), returns 0 on success or 1 if there was not enough space in TX buffer
+uint8_t USART_puts(uint16_t length, uint8_t * txData)
+{
+	if (((sendIndexIn < sendIndexOut) && (sendIndexIn + length >= sendIndexOut))
+			|| ((sendIndexIn >= sendIndexOut) && (sendIndexIn + length >= sendIndexOut + TX_BUFFER_SIZE)))
+	{
+		return 1;
+	}
+	for (uint16_t i = 0; i < length; i++)
+	{
+		sendBuffer[sendIndexIn++] = txData[i]; // Write byte to TX buffer
+		if (sendIndexIn >= TX_BUFFER_SIZE) sendIndexIn = 0; // Set TX buffer index to 0 if the end of the array was reached
+	}
+
+	GPIO_SetBits(GPIOB, GPIO_Pin_5);
+	GPIO_SetBits(GPIOB, GPIO_Pin_4);
+	Delay(500);
+	//USART_ITConfig(USART1, USART_IT_RXNE, DISABLE); // Enable USART 1 TX interrupt
+	USART_ITConfig(USART1, USART_IT_TXE, ENABLE); // Enable USART 1 TX interrupt
+	return 0;
 }
 
 // send a uint8_t complemented, repeated
@@ -193,12 +213,12 @@ uint8_t c;
   // first nibble
   c = what >> 4;
   uint8_t send1 = (c << 4) | (c ^ 0x0F);
-  USART_puts(USART1,send1 );
+  sendString[sendStringIndex++] = send1;
 
   // second nibble
   c = what & 0x0F;
   uint8_t send2 = (c << 4) | (c ^ 0x0F);
-  USART_puts(USART1,send2 );
+  sendString[sendStringIndex++] = send2;
 
 }  // end of sendComplemented
 
@@ -228,12 +248,13 @@ void rs485_sendMsg (const uint8_t * data, const uint8_t length)
 {
 	//uint8_t STX = '\2';
 	//uint8_t ETX = '\3';
-	//TODO: change to one USART_puts per message
-	USART_puts(USART1, '\2' );
+	sendStringIndex = 0;
+	sendString[sendStringIndex++] = '\2';
 	for (uint8_t i = 0; i < length; i++)
 		sendComplemented (data [i]);
-	USART_puts(USART1, '\3' );
+	sendString[sendStringIndex++] = '\3';
 	sendComplemented (crc8 (data, length));
+	USART_puts(sendStringIndex, sendString);
 }  // end of sendMsg
 
 //send message to sensor board to request sensor data
@@ -243,11 +264,7 @@ void rs485_requestSensorData(sensorPart sensor) {
 	//Enable sending
 	//USART_ClearFlag(USART1, USART_IT_RXNE);
 	//USART_ITConfig(USART1, USART_IT_RXNE, DISABLE);
-	GPIO_SetBits(GPIOB, GPIO_Pin_5);
-	GPIO_SetBits(GPIOB, GPIO_Pin_4);
-	debug_sending = 1;
 
-	Delay(1000);
 	switch (sensor) {
 
 		case leftArmSensor:
@@ -274,9 +291,6 @@ void rs485_requestSensorData(sensorPart sensor) {
 			return;
 
 	}
-	//Disable sending
-	GPIO_ResetBits(GPIOB, GPIO_Pin_5);
-	GPIO_ResetBits(GPIOB, GPIO_Pin_4);
 	debug_sending = 0;
 	//USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 }
@@ -308,7 +322,7 @@ void rs485_updateSensorData(){
 		float debugyaccel2 = Sensor_arm_left.accel2.f;
 		int debug = 1;
 		debugcounterGood++;
-		if (debugcounterGood >= 100) {
+		if (debugcounterGood >= 1) {
 			uint32_t debug2 = debugcounterBad;
 			uint32_t debug3 = debugcounterGood;
 			int debug = 1;
@@ -374,7 +388,6 @@ void USART1_IRQHandler(void){
 			        	debugcounterBad++;
 		            } else if (!bad_packet) {
 		            	//good and complete packet
-		            	//TODO: adapt for up to 4 bodyparts
 		            	rs485_complete_string = true;
 		            	//rs485_updateSensorData();
 		            }
@@ -397,4 +410,20 @@ void USART1_IRQHandler(void){
 		}
 		USART_ClearFlag(USART1, USART_IT_RXNE);
 	}
+	if( USART_GetITStatus(USART1, USART_IT_TXE)) // TX interrupt
+		{
+			if (sendIndexIn == sendIndexOut) // TX buffer empty
+			{
+				USART_ITConfig(USART1, USART_IT_TXE, DISABLE); // Disable USART 1 TX interrupt
+				//USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); // Enable USART 1 TX interrupt
+				Delay(500);
+				GPIO_ResetBits(GPIOB, GPIO_Pin_5);
+				GPIO_ResetBits(GPIOB, GPIO_Pin_4);
+			}
+			else // TX buffer not empty
+			{
+				USART_SendData(USART1, (uint16_t)sendBuffer[sendIndexOut++]); // Send next byte (this automatically clears the interrupt flag)
+				if (sendIndexOut >= TX_BUFFER_SIZE) sendIndexOut = 0; // Set TX buffer index to 0 if the end of the array was reached
+			}
+		}
 }

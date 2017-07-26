@@ -13,6 +13,8 @@
 #include "stm32f4xx_usart.h"
 #include <stdint.h>
 
+#define TX_BUFFER_SIZE 32 // Size of the TX buffer
+
 typedef enum
 {
 	leftArmSensor,
@@ -22,6 +24,8 @@ typedef enum
 	sensorPartEnumSize // Used to determine enum size
 } sensorPart;
 bool rs485_complete_string;
+
+
 
 void rs485_init(uint32_t baudRate);
 void rs485_sendMsg (const uint8_t * data, const uint8_t length);
