@@ -76,6 +76,7 @@ uint16_t usart_read(uint16_t length, uint8_t * rxData)
 	{
 		if (rxIndexIn == rxIndexOut) return i;// RX buffer empty
 		rxData[i] = rxBuffer[rxIndexOut++]; // Read byte from the buffer
+		if (rxIndexOut >= RX_BUFFER_SIZE) rxIndexOut = 0; // Set RX buffer index to 0 if the end of the array was reached
 	}
 	return length;
 }
@@ -86,6 +87,7 @@ void USART2_IRQHandler(void)
 	if( USART_GetITStatus(USART2, USART_IT_RXNE)) // RX interrupt
 	{
 		rxBuffer[rxIndexIn++] = (uint8_t)(USART_ReceiveData(USART2) & 0x00ff); // Read received byte (this automatically clears the interrupt flag)
+		if (rxIndexIn >= RX_BUFFER_SIZE) rxIndexIn = 0; // Set RX buffer index to 0 if the end of the array was reached
 #ifdef USART_DEBUG
 		if (rxIndexIn == rxIndexOut)
 		{
@@ -103,6 +105,7 @@ void USART2_IRQHandler(void)
 		else // TX buffer not empty
 		{
 			USART_SendData(USART2, (uint16_t)txBuffer[txIndexOut++]); // Send next byte (this automatically clears the interrupt flag)
+			if (txIndexOut >= TX_BUFFER_SIZE) txIndexOut = 0; // Set TX buffer index to 0 if the end of the array was reached
 		}
 	}
 }
