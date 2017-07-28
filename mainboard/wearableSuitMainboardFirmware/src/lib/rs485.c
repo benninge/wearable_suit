@@ -173,10 +173,30 @@ void rs485_init(uint32_t baudRate) {
 // Timer 5 interrupt handler
 void TIM5_IRQHandler(void)
 {
-	static uint8_t counter = 0;
+	static uint8_t counter = 1;
 	if (TIM_GetITStatus(TIM5, TIM_IT_Update)) // Timer update interrupt
 	{
-	  rs485_requestSensorData(leftArmSensor);
+		switch(counter) {
+			case 1:
+				rs485_requestSensorData(leftArmSensor);
+				counter++;
+				break;
+			case 2:
+				rs485_requestSensorData(rightArmSensor);
+				counter++;
+				break;
+			case 3:
+				rs485_requestSensorData(leftLegSensor);
+				counter++;
+				break;
+			case 4:
+				rs485_requestSensorData(rightLegSensor);
+				counter = 1;
+				break;
+			default:
+				counter = 1;
+		}
+
 	  TIM_ClearITPendingBit(TIM5, TIM_IT_Update); // Clear interrupt flag
 	}
 }
@@ -297,19 +317,62 @@ void rs485_requestSensorData(sensorPart sensor) {
 
 void rs485_updateSensorData(){
 	if (rs485_complete_string) {
-		//TODO: adapt to arms+legs, depending on sender of packet (2nd byte in string)
-		for ( int i=0; i < sizeof(float); i++ ) {
-			Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
-			Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
-			Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
-			Sensor_arm_left.gyro0.b[i] = decoded_string[2+12+i];
-			Sensor_arm_left.gyro1.b[i] = decoded_string[2+12+4+i];
-			Sensor_arm_left.gyro2.b[i] = decoded_string[2+12+8+i];
-			Sensor_arm_left.accel0.b[i] = decoded_string[2+24+i];
-			Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
-			Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
+		switch (decoded_string[1]) {
+			case 1:
+				for ( int i=0; i < sizeof(float); i++ ) {
+					Sensor_arm_left.ypr0.b[i] = decoded_string[2+i];
+					Sensor_arm_left.ypr1.b[i] = decoded_string[2+4+i];
+					Sensor_arm_left.ypr2.b[i] = decoded_string[2+8+i];
+					Sensor_arm_left.gyro0.b[i] = decoded_string[2+12+i];
+					Sensor_arm_left.gyro1.b[i] = decoded_string[2+12+4+i];
+					Sensor_arm_left.gyro2.b[i] = decoded_string[2+12+8+i];
+					Sensor_arm_left.accel0.b[i] = decoded_string[2+24+i];
+					Sensor_arm_left.accel1.b[i] = decoded_string[2+24+4+i];
+					Sensor_arm_left.accel2.b[i] = decoded_string[2+24+8+i];
+				}
+				break;
+			case 2:
+				for ( int i=0; i < sizeof(float); i++ ) {
+					Sensor_arm_right.ypr0.b[i] = decoded_string[2+i];
+					Sensor_arm_right.ypr1.b[i] = decoded_string[2+4+i];
+					Sensor_arm_right.ypr2.b[i] = decoded_string[2+8+i];
+					Sensor_arm_right.gyro0.b[i] = decoded_string[2+12+i];
+					Sensor_arm_right.gyro1.b[i] = decoded_string[2+12+4+i];
+					Sensor_arm_right.gyro2.b[i] = decoded_string[2+12+8+i];
+					Sensor_arm_right.accel0.b[i] = decoded_string[2+24+i];
+					Sensor_arm_right.accel1.b[i] = decoded_string[2+24+4+i];
+					Sensor_arm_right.accel2.b[i] = decoded_string[2+24+8+i];
+				}
+				break;
+			case 3:
+				for ( int i=0; i < sizeof(float); i++ ) {
+					Sensor_leg_left.ypr0.b[i] = decoded_string[2+i];
+					Sensor_leg_left.ypr1.b[i] = decoded_string[2+4+i];
+					Sensor_leg_left.ypr2.b[i] = decoded_string[2+8+i];
+					Sensor_leg_left.gyro0.b[i] = decoded_string[2+12+i];
+					Sensor_leg_left.gyro1.b[i] = decoded_string[2+12+4+i];
+					Sensor_leg_left.gyro2.b[i] = decoded_string[2+12+8+i];
+					Sensor_leg_left.accel0.b[i] = decoded_string[2+24+i];
+					Sensor_leg_left.accel1.b[i] = decoded_string[2+24+4+i];
+					Sensor_leg_left.accel2.b[i] = decoded_string[2+24+8+i];
+				}
+				break;
+			case 4:
+				for ( int i=0; i < sizeof(float); i++ ) {
+					Sensor_leg_right.ypr0.b[i] = decoded_string[2+i];
+					Sensor_leg_right.ypr1.b[i] = decoded_string[2+4+i];
+					Sensor_leg_right.ypr2.b[i] = decoded_string[2+8+i];
+					Sensor_leg_right.gyro0.b[i] = decoded_string[2+12+i];
+					Sensor_leg_right.gyro1.b[i] = decoded_string[2+12+4+i];
+					Sensor_leg_right.gyro2.b[i] = decoded_string[2+12+8+i];
+					Sensor_leg_right.accel0.b[i] = decoded_string[2+24+i];
+					Sensor_leg_right.accel1.b[i] = decoded_string[2+24+4+i];
+					Sensor_leg_right.accel2.b[i] = decoded_string[2+24+8+i];
+				}
+				break;
+			default:
+				return;
 		}
-
 #ifdef rs485_DEBUG
 		float debugyypr0 = Sensor_arm_left.ypr0.f;
 		float debugyypr1 = Sensor_arm_left.ypr1.f;
@@ -323,12 +386,11 @@ void rs485_updateSensorData(){
 		int debug = 1;
 		debugcounterGood++;
 		if (debugcounterGood >= 1) {
-			uint32_t debug2 = debugcounterBad;
-			uint32_t debug3 = debugcounterGood;
+			uint32_t debugBad = debugcounterBad;
+			uint32_t debugGood = debugcounterGood;
 			int debug = 1;
 		}
 #endif
-
 		rs485_complete_string = false;
 	}
 }
