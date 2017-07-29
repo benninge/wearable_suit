@@ -46,7 +46,7 @@ int main(void)
 	ledSuit_configureAutoRotate(WHOLE_SUIT, forwards, 240);
 	ledSuit_enableAutoRotate(WHOLE_SUIT, 1);
 
-	while (1);
+	while (1)
 	{
 		//Delay2(100);
 
