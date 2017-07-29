@@ -57,7 +57,7 @@ int main(void)
 		if (audioLevel < 10) audioLevel = 0;
 		else audioLevel -= 10;*/
 
-		rs485_updateSensorData();
+		//rs485_updateSensorData();
 
 		uint8_t leftArmMoving = rs485_getMoving(leftArmSensor);
 		uint8_t rightArmMoving = rs485_getMoving(rightArmSensor);

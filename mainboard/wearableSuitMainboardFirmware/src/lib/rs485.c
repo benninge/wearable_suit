@@ -53,7 +53,7 @@ PERMISSION TO DISTRIBUTE
 
 #define MAX_STRLEN 100
 #define TIMEOUT 50
-#define rs485_DEBUG
+//#define rs485_DEBUG
 
 bool have_stx = false;
 bool have_etx = false;
@@ -160,7 +160,7 @@ void rs485_init(uint32_t baudRate) {
 	timerInitStructure.TIM_Period = 20000;
 	TIM_TimeBaseInit(TIM5, &timerInitStructure); // Initialize timer
 	// Initialize timer interrupt
-	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn; // Timer 2 interrupt
+	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn; // Timer 5 interrupt
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 9; // Low priority
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 9; // Low priority
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; // Enable interrupt
@@ -171,6 +171,8 @@ void rs485_init(uint32_t baudRate) {
 	// Start timer for automatic coloring functions
 	TIM_Cmd(TIM5, ENABLE);
 }
+
+
 // Timer 5 interrupt handler
 void TIM5_IRQHandler(void)
 {
@@ -482,6 +484,7 @@ void USART1_IRQHandler(void){
 		            } else if (!bad_packet) {
 		            	//good and complete packet
 		            	rs485_complete_string = true;
+		            	rs485_updateSensorData();
 		            	//rs485_updateSensorData();
 		            }
 		            break;
