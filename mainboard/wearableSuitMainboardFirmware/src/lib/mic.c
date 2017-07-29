@@ -76,6 +76,28 @@ void mic_init(void)
 	TIM_Cmd(TIM4, ENABLE);
 }
 
+// Gets the current audio level as a value between 0 and 4095
+uint16_t mic_getAudioLevel()
+{
+	uint16_t minValue = _sampleBuffer[0];
+	uint16_t maxValue = _sampleBuffer[0];
+
+	// Search for the highest and lowest sample values
+	for (int i = 1; i < NUMBER_OF_SAMPLES; i++)
+	{
+		if (_sampleBuffer[i] < minValue) // Found lower sample value
+		{
+			minValue = _sampleBuffer[i];
+		}
+		if (_sampleBuffer[i] > maxValue) // Found higher sample value
+		{
+			maxValue = _sampleBuffer[i];
+		}
+	}
+
+	return (maxValue - minValue); // Return maximal sample difference as a measure of the audio level
+}
+
 // Gets the spectrum of the current sound recorded by the microphone, The array size of "spectrum" must be 10
 void mic_getSpectrum(uint8_t * spectrum, uint8_t sensitivity)
 {

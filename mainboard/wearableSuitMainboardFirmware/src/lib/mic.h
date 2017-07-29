@@ -19,6 +19,9 @@
 // Initializes the microphone library
 void mic_init(void);
 
+// Gets the current audio level as a value between 0 and 4095
+uint16_t mic_getAudioLevel();
+
 // Gets the spectrum of the current sound recorded by the microphone, The array size of "spectrum" must be 10
 void mic_getSpectrum(uint8_t * spectrum, uint8_t sensitivity);
 
