@@ -157,7 +157,7 @@ void rs485_init(uint32_t baudRate) {
 	TIM_TimeBaseInitTypeDef  timerInitStructure;
 	TIM_TimeBaseStructInit(&timerInitStructure); // Initialize timer initialization structure with default values
 	timerInitStructure.TIM_Prescaler = 84;
-	timerInitStructure.TIM_Period = 33000;
+	timerInitStructure.TIM_Period = 20000;
 	TIM_TimeBaseInit(TIM5, &timerInitStructure); // Initialize timer
 	// Initialize timer interrupt
 	NVIC_InitStructure.NVIC_IRQChannel = TIM5_IRQn; // Timer 2 interrupt
@@ -524,37 +524,53 @@ void USART1_IRQHandler(void){
 		}
 }
 
+#define MOVING_THRESHOLD 110
+#define GYRO_THRESHOLD 10000
+
 uint8_t rs485_getMoving(sensorPart sensor) {
+
 	switch (sensor) {
 		case leftArmSensor:
-					if (abs(Sensor_arm_left.accel0.f) >= 2 ||
-						abs(Sensor_arm_left.accel1.f) >= 2 ||
-						abs(Sensor_arm_left.accel2.f) >= 2 )
+					if (abs((int)(Sensor_arm_left.accel0.f * 100)) >= MOVING_THRESHOLD ||
+						abs((int)(Sensor_arm_left.accel1.f * 100)) >= MOVING_THRESHOLD ||
+						abs((int)(Sensor_arm_left.accel2.f * 100)) >= MOVING_THRESHOLD ||
+						abs((int)(Sensor_arm_left.gyro0.f * 100)) >= GYRO_THRESHOLD    ||
+						abs((int)(Sensor_arm_left.gyro1.f * 100)) >= GYRO_THRESHOLD    ||
+						abs((int)(Sensor_arm_left.gyro2.f * 100)) >= GYRO_THRESHOLD )
 					{
 						return 1;
 					}
 					break;
 		case rightArmSensor:
-					if (abs(Sensor_arm_right.accel0.f) >= 2 ||
-						abs(Sensor_arm_right.accel1.f) >= 2 ||
-						abs(Sensor_arm_right.accel2.f) >= 2 )
-					{
-						return 1;
-					}
+			if (abs((int)(Sensor_arm_right.accel0.f * 100)) >= MOVING_THRESHOLD ||
+					abs((int)(Sensor_arm_right.accel1.f * 100)) >= MOVING_THRESHOLD ||
+					abs((int)(Sensor_arm_right.accel2.f * 100)) >= MOVING_THRESHOLD ||
+					abs((int)(Sensor_arm_right.gyro0.f * 100)) >= GYRO_THRESHOLD    ||
+					abs((int)(Sensor_arm_right.gyro1.f * 100)) >= GYRO_THRESHOLD    ||
+					abs((int)(Sensor_arm_right.gyro2.f * 100)) >= GYRO_THRESHOLD )
+				{
+			return 1;
+			}
 					break;
 		case leftLegSensor:
-					if (abs(Sensor_leg_left.accel0.f) >= 2 ||
-						abs(Sensor_leg_left.accel1.f) >= 2 ||
-						abs(Sensor_leg_left.accel2.f) >= 2 )
-					{
+			if (abs((int)(Sensor_leg_left.accel0.f * 100)) >= MOVING_THRESHOLD ||
+									abs((int)(Sensor_leg_left.accel1.f * 100)) >= MOVING_THRESHOLD ||
+									abs((int)(Sensor_leg_left.accel2.f * 100)) >= MOVING_THRESHOLD ||
+									abs((int)(Sensor_leg_left.gyro0.f * 100)) >= GYRO_THRESHOLD    ||
+									abs((int)(Sensor_leg_left.gyro1.f * 100)) >= GYRO_THRESHOLD    ||
+									abs((int)(Sensor_leg_left.gyro2.f * 100)) >= GYRO_THRESHOLD )
+								{
 						return 1;
 					}
 					break;
 		case rightLegSensor:
-					if (abs(Sensor_leg_right.accel0.f) >= 2 ||
-						abs(Sensor_leg_right.accel1.f) >= 2 ||
-						abs(Sensor_leg_right.accel2.f) >= 2 )
-					{
+			if (abs((int)(Sensor_leg_right.accel0.f * 100)) >= MOVING_THRESHOLD ||
+									abs((int)(Sensor_leg_right.accel1.f * 100)) >= MOVING_THRESHOLD ||
+									abs((int)(Sensor_leg_right.accel2.f * 100)) >= MOVING_THRESHOLD ||
+									abs((int)(Sensor_leg_right.gyro0.f * 100)) >= GYRO_THRESHOLD    ||
+									abs((int)(Sensor_leg_right.gyro1.f * 100)) >= GYRO_THRESHOLD    ||
+									abs((int)(Sensor_leg_right.gyro2.f * 100)) >= GYRO_THRESHOLD )
+								{
 						return 1;
 					}
 					break;
