@@ -7,7 +7,7 @@
 
 const byte ENABLE_PIN = 3;
 const byte RECEIVE_PIN = 4;
-const byte SLAVE_ID = 1;
+const byte SLAVE_ID = 4;
 union float2bytes { float f; byte b[sizeof(float)]; };
 float2bytes ypr0;
 float2bytes ypr1;

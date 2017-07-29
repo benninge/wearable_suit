@@ -7,6 +7,7 @@
  */
 
 #include "rs485.h"
+#include <stdlib.h>
 
 /*
  RS485 protocol library.
@@ -383,9 +384,39 @@ void rs485_updateSensorData(){
 		float debugyaccel0 = Sensor_arm_left.accel0.f;
 		float debugyaccel1 = Sensor_arm_left.accel1.f;
 		float debugyaccel2 = Sensor_arm_left.accel2.f;
+
+		float debug2yypr0 = Sensor_arm_right.ypr0.f;
+		float debug2yypr1 = Sensor_arm_right.ypr1.f;
+		float debug2yypr2 = Sensor_arm_right.ypr2.f;
+		float debug2ygyro0 = Sensor_arm_right.gyro0.f;
+		float debug2ygyro1 = Sensor_arm_right.gyro1.f;
+		float debug2ygyro2 = Sensor_arm_right.gyro2.f;
+		float debug2yaccel0 = Sensor_arm_right.accel0.f;
+		float debug2yaccel1 = Sensor_arm_right.accel1.f;
+		float debug2yaccel2 = Sensor_arm_right.accel2.f;
+
+		float debug3yypr0 = Sensor_leg_left.ypr0.f;
+		float debug3yypr1 = Sensor_leg_left.ypr1.f;
+		float debug3yypr2 = Sensor_leg_left.ypr2.f;
+		float debug3ygyro0 = Sensor_leg_left.gyro0.f;
+		float debug3ygyro1 = Sensor_leg_left.gyro1.f;
+		float debug3ygyro2 = Sensor_leg_left.gyro2.f;
+		float debug3yaccel0 = Sensor_leg_left.accel0.f;
+		float debug3yaccel1 = Sensor_leg_left.accel1.f;
+		float debug3yaccel2 = Sensor_leg_left.accel2.f;
+
+		float debug4yypr0 = Sensor_leg_right.ypr0.f;
+		float debug4yypr1 = Sensor_leg_right.ypr1.f;
+		float debug4yypr2 = Sensor_leg_right.ypr2.f;
+		float debug4ygyro0 = Sensor_leg_right.gyro0.f;
+		float debug4ygyro1 = Sensor_leg_right.gyro1.f;
+		float debug4ygyro2 = Sensor_leg_right.gyro2.f;
+		float debug4yaccel0 = Sensor_leg_right.accel0.f;
+		float debug4yaccel1 = Sensor_leg_right.accel1.f;
+		float debug4yaccel2 = Sensor_leg_right.accel2.f;
 		int debug = 1;
 		debugcounterGood++;
-		if (debugcounterGood >= 1) {
+		if (debugcounterGood >= 10) {
 			uint32_t debugBad = debugcounterBad;
 			uint32_t debugGood = debugcounterGood;
 			int debug = 1;
@@ -491,4 +522,44 @@ void USART1_IRQHandler(void){
 			GPIO_ResetBits(GPIOB, GPIO_Pin_4);
 			USART_ITConfig(USART1, USART_IT_TC, DISABLE);
 		}
+}
+
+uint8_t rs485_getMoving(sensorPart sensor) {
+	switch (sensor) {
+		case leftArmSensor:
+					if (abs(Sensor_arm_left.accel0.f) >= 2 ||
+						abs(Sensor_arm_left.accel1.f) >= 2 ||
+						abs(Sensor_arm_left.accel2.f) >= 2 )
+					{
+						return 1;
+					}
+					break;
+		case rightArmSensor:
+					if (abs(Sensor_arm_right.accel0.f) >= 2 ||
+						abs(Sensor_arm_right.accel1.f) >= 2 ||
+						abs(Sensor_arm_right.accel2.f) >= 2 )
+					{
+						return 1;
+					}
+					break;
+		case leftLegSensor:
+					if (abs(Sensor_leg_left.accel0.f) >= 2 ||
+						abs(Sensor_leg_left.accel1.f) >= 2 ||
+						abs(Sensor_leg_left.accel2.f) >= 2 )
+					{
+						return 1;
+					}
+					break;
+		case rightLegSensor:
+					if (abs(Sensor_leg_right.accel0.f) >= 2 ||
+						abs(Sensor_leg_right.accel1.f) >= 2 ||
+						abs(Sensor_leg_right.accel2.f) >= 2 )
+					{
+						return 1;
+					}
+					break;
+		default:
+					return 0;
+	}
+	return 0;
 }
