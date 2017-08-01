@@ -223,7 +223,7 @@ void ledSuit_init(void)
 	ledSuit_setBrightness(WHOLE_SUIT, 50, 0); // Initialize the brightness of all body parts with 50
 	// Initialize strobe
 	ledSuit_enableStrobe(WHOLE_SUIT, 0); // Initialize all body parts with strobe switched off
-	_strobePeriod = 20; // Initialize strobe period
+	_strobePeriod = 2; // Initialize strobe period
 	// Initialize auto rotate
 	ledSuit_enableAutoRotate(WHOLE_SUIT, 0); // Initialize all body parts with auto rotate switched off
 	ledSuit_configureAutoRotate(WHOLE_SUIT, forwards, 150); // Initialize auto rotate
@@ -370,18 +370,18 @@ void ledSuit_color(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, led
 }
 
 // Colors a number of LEDs with an rgbLed value (ledCount == 0 colors the whole body part)
-void ledSut_colorRgbLed(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed rgb, uint8_t update)
+void ledSuit_colorRgbLed(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed rgb, uint8_t update)
 {
 	ledSuit_colorRgb(bodyPart, startIndex, ledCount, rgb.r, rgb.g, rgb.b, update);
 }
 
 // Colors a number of LEDs with the values of an LED array
-void ledSut_colorArray(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed * leds, uint8_t update)
+void ledSuit_colorArray(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed * leds, uint8_t update)
 {
 	// Color each LED individually
 	for (uint16_t i = 0; i < ledCount; i++)
 	{
-		ledSut_colorRgbLed(bodyPart, startIndex + i, 1, leds[i], update);
+		ledSuit_colorRgbLed(bodyPart, startIndex + i, 1, leds[i], update);
 	}
 
 	if (update) ledSuit_update(bodyPart); // Write the configuration of the body part to the LED strip

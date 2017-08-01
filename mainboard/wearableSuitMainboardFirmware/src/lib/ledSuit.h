@@ -88,9 +88,9 @@ void ledSuit_colorRgb(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, 
 // Colors a number of LEDs with a color (ledCount == 0 colors the whole body part)
 void ledSuit_color(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, ledColor color, uint8_t update);
 // Colors a number of LEDs with an rgbLed value (ledCount == 0 colors the whole body part)
-void ledSut_colorRgbLed(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed rgb, uint8_t update);
+void ledSuit_colorRgbLed(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed rgb, uint8_t update);
 // Colors a number of LEDs with the values of an LED array
-void ledSut_colorArray(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed * leds, uint8_t update);
+void ledSuit_colorArray(uint8_t bodyPart, uint16_t startIndex, uint16_t ledCount, rgbLed * leds, uint8_t update);
 // Colors a body part with a color fade of 2 to 10 colors
 void ledSuit_colorFade(uint8_t bodyPart, uint8_t colorCount, rgbLed * colors, uint8_t update);
 
