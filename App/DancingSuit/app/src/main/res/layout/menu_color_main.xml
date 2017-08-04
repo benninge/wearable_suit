@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="19dp"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="265dp"
+        android:layout_height="172dp"
+        android:layout_gravity="center_horizontal"
+        app:srcCompat="@drawable/colorcircle" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/checkBoxRed"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1.25"
+            android:text="Red"
+            android:textColor="@android:color/black"
+            android:textColorHint="@color/darkred"
+            android:textColorLink="@color/red" />
+
+        <CheckBox
+            android:id="@+id/checkBoxOrange"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Orange"
+            android:textColor="@android:color/black"
+            android:textColorLink="@color/darkorange" />
+
+        <CheckBox
+            android:id="@+id/checkBoxYellow"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Yellow"
+            android:textColor="@android:color/black"
+            android:textColorLink="@color/orange" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/checkBoxGreen"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.78"
+            android:text="Green"
+            android:textColor="@android:color/black"
+            android:textColorLink="@color/green" />
+
+        <CheckBox
+            android:id="@+id/checkBoxTeal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Teal"
+            android:textColor="@android:color/black"
+            android:textColorLink="@color/blue" />
+
+        <CheckBox
+            android:id="@+id/checkBoxBlue"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Blue"
+            android:textColor="@android:color/black"
+            android:textColorLink="@color/colorPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/checkBoxPurple"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.80"
+            android:text="Purple"
+            android:textColor="@android:color/black"
+            android:textColorLink="@color/purple" />
+
+        <CheckBox
+            android:id="@+id/checkBoxPink"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1.05"
+            android:text="Pink"
+            android:textColor="@android:color/black"
+            android:textColorLink="@color/colorAccent" />
+
+        <CheckBox
+            android:id="@+id/checkBoxWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.95"
+            android:text="White"
+            android:textColor="@android:color/black"
+            android:textColorLink="@android:color/background_light" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_weight="0.17"
+        android:orientation="horizontal"></LinearLayout>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose your Blinking-Pattern!" />
+
+    <Spinner
+        android:id="@+id/spinnercoloractivity"
+        style="@style/spinner_style"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:prompt="@string/blink_prompt"
+        android:spinnerMode="dialog" />
+</LinearLayout>

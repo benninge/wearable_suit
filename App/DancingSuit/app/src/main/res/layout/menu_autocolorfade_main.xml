@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:theme="@style/AppTheme"
+    android:weightSum="1">
+
+    <!-- Screen Design for Photos -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <Switch
+            android:id="@+id/switch1"
+            style="@style/AppTheme"
+            android:layout_width="319dp"
+            android:layout_height="70dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="Spectrum"
+            android:textColor="@color/black"
+            android:textSize="17.5dp"
+            android:theme="@style/BrandedSwitch.control" />
+    </RelativeLayout>
+
+</LinearLayout>

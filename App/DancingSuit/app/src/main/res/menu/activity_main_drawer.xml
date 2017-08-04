@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_right_arm"
+            android:icon="@drawable/ic_right_hand"
+            android:title="Right Arm" />
+        <item
+            android:id="@+id/nav_left_arm"
+            android:icon="@drawable/ic_left_hand"
+            android:title="Left Arm" />
+        <item
+            android:id="@+id/nav_right_leg"
+            android:icon="@drawable/ic_right_leg"
+            android:title="Right Leg" />
+        <item
+            android:id="@+id/nav_left_leg"
+            android:icon="@drawable/ic_left_leg"
+            android:title="Left Leg" />
+        <item
+            android:id="@+id/nav_hole_suit"
+            android:icon="@drawable/ic_hole_suit"
+            android:title="Suit" />
+        <item
+            android:id="@+id/nav_slideshow"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Demo" />
+    </group>
+
+    <item android:title="About">
+        <menu>
+
+            <item
+                android:id="@+id/nav_info"
+                android:icon="@drawable/ic_info"
+                android:title="Info" />
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+        </menu>
+    </item>
+
+</menu>

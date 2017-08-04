@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.07"
+        android:text="Choose the first color for the Colorfade Function!" />
+
+    <Spinner
+        android:id="@+id/spinnerfade1"
+        style="@style/spinner_style"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_weight="0.07" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.07"
+        android:text="Choose the second color for the Colorfade Function!" />
+
+    <Spinner
+        android:id="@+id/spinnerfade2"
+        style="@style/spinner_style"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_weight="0.07" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.07"
+        android:text="Choose the third color for the Colorfade Function!" />
+
+    <Spinner
+        android:id="@+id/spinnerfade3"
+        style="@style/spinner_style"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_weight="0.07" />
+
+    <CheckBox
+        android:id="@+id/checkBox10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.07"
+        android:text="Auto rotate" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:orientation="horizontal"
+        android:layout_weight="0.10">
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose your Blinking-Pattern!" />
+
+    <Spinner
+        android:id="@+id/spinnerfade"
+        style="@style/spinner_style"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_weight="0.09"
+        android:prompt="@string/blink_prompt"
+        android:spinnerMode="dialog" />
+
+</LinearLayout>

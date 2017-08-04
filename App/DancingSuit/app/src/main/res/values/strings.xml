@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Dancing Suit</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+
+    <string name="blink_prompt">Choose your Blinking-Pattern!</string>
+
+    <string-array name="pattern_arrays">
+        <item>Always On</item>
+        <item>Stroboscope</item>
+        <item>Motiondetection</item>
+    </string-array>
+
+    <string name="color_prompt">Use your Color!</string>
+
+    <string-array name="rotate_arrays">
+        <item>Red</item>
+        <item>Orange</item>
+        <item>Yellow</item>
+        <item>Green</item>
+        <item>Teal</item>
+        <item>Blue</item>
+        <item>Purple</item>
+        <item>Pink</item>
+        <item>White</item>
+
+    </string-array>
+</resources>
