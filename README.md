@@ -4,4 +4,4 @@ The smart dancing suit project is part of the [Wearable Computing Systems Lab Co
 
 ## Hardware architecture
 
-![Schematic setup of the system](ledSuitSchematic.png)
+![Schematic setup of the system](poster/ledSuitSchematic.png)
