@@ -10,7 +10,11 @@ The motion measurement are performed by IMUs which are mounted on hands and feet
 ## Contents
 
 * [System architecture](https://github.com/benninge/wearable_suit/blob/master/README.md#system-architecture)
+    *[Mainboard](https://github.com/benninge/wearable_suit/blob/master/README.md#mainboard)
+    *[Sensor Board](https://github.com/benninge/wearable_suit/blob/master/README.md#sensor-board)
 * [Mainboard firmware](https://github.com/benninge/wearable_suit/blob/master/README.md#mainboard-firmware)
+    *[Libraries](https://github.com/benninge/wearable_suit/blob/master/README.md#libraries)
+    *[Examples](https://github.com/benninge/wearable_suit/blob/master/README.md#examples)
 
 
 ## System architecture
@@ -28,11 +32,24 @@ The mainboard consists of an STM32F411E discovery board with a breadboard shield
 
 The "App" folder contains the app source code. the app cannot be used yet, because the bluetooth communication is not fully implemented.
 
+### Mainboard
+
+// TODO: Was zum mainboard schreiben
+
+### Sensor Board
+
+// TODO: Was zum sensor board scheiben
+
+<img src="poster/sensorBoard.png" width="300">
 
 ## Mainboard firmware
+
+### Libraries
 
 // TODO: Was zur Modulstruktur schreiben
 
 // TODO: Bild mit Modulstruktur einfügen
+
+### Examples
 
 // TODO: Was zu den Beispielprogrammen schreiben
