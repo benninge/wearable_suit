@@ -10,11 +10,11 @@ The motion measurement are performed by IMUs which are mounted on hands and feet
 ## Contents
 
 * [System architecture](https://github.com/benninge/wearable_suit/blob/master/README.md#system-architecture)
-    *[Mainboard](https://github.com/benninge/wearable_suit/blob/master/README.md#mainboard)
-    *[Sensor Board](https://github.com/benninge/wearable_suit/blob/master/README.md#sensor-board)
+    * [Mainboard](https://github.com/benninge/wearable_suit/blob/master/README.md#mainboard)
+    * [Sensor Board](https://github.com/benninge/wearable_suit/blob/master/README.md#sensor-board)
 * [Mainboard firmware](https://github.com/benninge/wearable_suit/blob/master/README.md#mainboard-firmware)
-    *[Libraries](https://github.com/benninge/wearable_suit/blob/master/README.md#libraries)
-    *[Examples](https://github.com/benninge/wearable_suit/blob/master/README.md#examples)
+    * [Libraries](https://github.com/benninge/wearable_suit/blob/master/README.md#libraries)
+    * [Examples](https://github.com/benninge/wearable_suit/blob/master/README.md#examples)
 
 
 ## System architecture
