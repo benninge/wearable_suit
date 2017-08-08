@@ -7,6 +7,12 @@ For the sound measurement a microphone module is used. The measurement samples a
 The motion measurement are performed by IMUs which are mounted on hands and feet. This allows a movement detection of individual body parts.
 
 
+## Contents
+
+* [System architecture](https://github.com/benninge/wearable_suit/blob/master/README.md#system-architecture)
+* [Mainboard firmware](https://github.com/benninge/wearable_suit/blob/master/README.md#mainboard-firmware)
+
+
 ## System architecture
 
 The System is built according to the hardware architecture given in the following image.
