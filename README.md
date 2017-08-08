@@ -21,7 +21,12 @@ The motion measurement are performed by IMUs which are mounted on hands and feet
 
 The System is built according to the hardware architecture given in figure 1.
 
-<img align="center" src="poster/ledSuitSchematic.png" width="500" description="Figure 1: Schematic setup of the system">
+<figure role="group">
+<div align="center">
+<img src="poster/ledSuitSchematic.png" width="500">
+<figcaption> Figure 1: Schematic setup of the system </figcaption> 
+</div> 
+</figure>
 
 The sensor module is an Arduino compatible custom circuit board. The eagle files can be found in the "SensorBoard" folder in this repository. The sensor board hardware uses an ATmega328P microcontroller and an MPU-9250 IMU. It is directly powered by the 3s LiPo power supply and connected to the mainboard over an RS-485 based bus system.
 Before flashing the firmware to the sensor boards, the Arduino bootloader needs to be flashed to the sensor boards according to the [Arduino ISP instructions](https://www.arduino.cc/en/Tutorial/ArduinoISP). The sensor board firmware can be found in the "arduino/src/mpu9250_basicDMP" folder.
