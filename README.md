@@ -27,7 +27,7 @@ The System is built according to the hardware architecture given in figure 1.
 <div align="center"><figcaption> Figure 1: Schematic setup of the system </figcaption></div> 
 </figure>
 
-The sensor module is an Arduino compatible custom circuit board. The eagle files can be found in the "SensorBoard" folder in this repository. The sensor board hardware uses an ATmega328P microcontroller and an MPU-9250 IMU. It is directly powered by the 3s LiPo power supply and connected to the mainboard over an RS-485 based bus system.
+The sensor module is an Arduino compatible custom circuit board. The EAGLE files can be found in the "SensorBoard" folder in this repository. The sensor board hardware uses an ATmega328P microcontroller and an MPU-9250 IMU. It is directly powered by the 3s LiPo power supply and connected to the mainboard over an RS-485 based bus system.
 Before flashing the firmware to the sensor boards, the Arduino bootloader needs to be flashed to the sensor boards according to the [Arduino ISP instructions](https://www.arduino.cc/en/Tutorial/ArduinoISP). The sensor board firmware can be found in the "arduino/src/mpu9250_basicDMP" folder.
 
 The mainboard consists of an STM32F411E discovery board with a breadboard shield. The shield powers the discovery board and connects it to the sensor boards, the WS2812 RGB LED strips on arms and legs, the 10 x 10 LED display on the chest and the Adafruit MAX9814 microphone module. A wiring diagram of the mainboard shield is shown in figure 2. The mainboard firmware can be found in the "mainboard" folder.
