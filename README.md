@@ -23,6 +23,8 @@ The motion measurement are performed by IMUs which are mounted on hands and feet
 
 The System is built according to the hardware architecture given in figure 1.
 
+// TODO: Was zum bild schreiben
+
 <figure role="group">
 <div align="center"><img src="poster/ledSuitSchematic.png" width="500"></div> 
 <div align="center"><figcaption> Figure 1: Schematic setup of the system </figcaption></div> 
