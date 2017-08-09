@@ -1,10 +1,10 @@
 # Smart dancing suit
 
-The smart dancing suit project is part of the [Wearable Computing Systems Lab Course](https://es.informatik.uni-freiburg.de/teaching/wearable-lab) in SS2017. The idea is to develop an LED covered dancing suit which generates a light show according to the current music and movements of the wearer, instead of running a predefined choreography like it is done in other approaches. This is what we call a “smart" dancing suit.
+The smart dancing suit project was part of the [Wearable Computing Systems Lab Course](https://es.informatik.uni-freiburg.de/teaching/wearable-lab) during the summer semester of 2017. The idea is to develop an LED covered dancing suit which generates a light show according to the current music and movements of the wearer, instead of running a predefined choreography like it is done in other approaches. This is what we call a “smart" dancing suit.
 
 Therefore the suit is equipped with a couple of sensors which enable sensing of motions and sound.
 For the sound measurement a microphone module is used. The measurement samples are then used to calculate the sound level or to apply a Fourier transform. The music spectrum can be shown on the chest display.
-The motion measurement are performed by IMUs which are mounted on hands and feet. This allows a movement detection of individual body parts.
+The motion measurement are performed by inertial measurement units (IMUs) which are mounted on hands and feet. This allows movement detection of individual body parts.
 
 
 ## Contents
@@ -45,7 +45,7 @@ The sensor boards are connected over an RS-485 based bus system. The RS-485 tran
 
 ### Sensor board
 
-The sensor module is an Arduino compatible custom circuit board. Figure 3 shows an assembled sensor board. The EAGLE files can be found in the "SensorBoard" folder in this repository. The sensor board hardware uses an ATmega328P microcontroller and an MPU-9250 IMU. It is directly powered by the 3s LiPo power supply and connected to the mainboard over the RS-485 bus.
+The sensor module is an Arduino compatible custom circuit board. Figure 3 shows an assembled sensor board. The EAGLE files can be found in the "SensorBoard" folder in this repository. The sensor board hardware uses an ATmega328P microcontroller and a MPU-9250 IMU. It is directly powered by the 3s LiPo power supply and connected to the mainboard over the RS-485 bus.
 
 <figure role="group">
 <div align="center"><img src="poster/sensorBoard.png" width="300"></div> 
