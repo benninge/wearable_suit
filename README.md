@@ -56,7 +56,7 @@ The sensor module is an Arduino compatible custom circuit board. Figure 3 shows 
 
 ## Software
 
-This project provides a software development kit for the mainboard containing exaples. Additionally a sensor board firmware is provided as well as an incomplete android app to control the suit with a smartphone.
+This project provides a software development kit for the mainboard containing examples. Additionally a sensor board firmware is provided as well as an incomplete android app to control the suit with a smartphone.
 
 
 ### Mainboard firmware
