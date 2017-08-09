@@ -21,9 +21,7 @@ The motion measurement are performed by inertial measurement units (IMUs) which 
 
 ## Hardware architecture
 
-The System is built according to the hardware architecture given in figure 1.
-
-// TODO: Was zum bild schreiben
+The system is built according to the hardware architecture given in figure 1. The centerpiece of the system is the mainboard it contains an STM32 microcontroller which controls all the other modules. It is connected to the IMU sensor modules over a bus systems and it directly controls all LEDs as well as the microphone module which is used for music detection. A bluetooth connection to an Android app was also planned but is currently not implemented.
 
 <figure role="group">
 <div align="center"><img src="poster/ledSuitSchematic.png" width="500"></div> 
@@ -40,7 +38,7 @@ The mainboard consists of an STM32F411E discovery board with a breadboard shield
 <div align="center"><figcaption> Figure 2: Wiring diagram of the mainboard shield </figcaption></div> 
 </figure>
 
-The sensor boards are connected over an RS-485 based bus system. The RS-485 transceiver needs to be a model with 3.3V logic level. The chest display and the LED strips have to be connected according to the defines in WS2812.h ledSuit.h and ledSuit.c of the mainboard firmware (which may be configured according to the used led-strip lengths). Since the LED strips are powered with 5V, each LED strip uses a switching regulator to generate its supply voltage out of the 3s LiPo power supply.
+The sensor boards are connected over an RS-485 based bus system. The RS-485 transceiver needs to be a model with 3.3V logic level. The chest display and the LED strips have to be connected according to the defines in WS2812.h ledSuit.h and ledSuit.c of the mainboard firmware (which may be configured according to the used led-strip lengths). Since the LED strips are powered with 5V, each LED strip uses a switching regulator to generate its supply voltage out of the 3s LiPo power supply (which is called VCC here).
 
 
 ### Sensor board
