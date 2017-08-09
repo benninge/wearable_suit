@@ -64,7 +64,7 @@ The mainboard firmware can be found in the "mainboard" folder. It contains all l
 
 #### Libraries
 
-The module structure of the mainboard firmware is shown in figure 4. The used hardware modules are colored in blue and the libraries colored in green. The whole suit functionality can easily be accessed through high level functions provided by the software development kit libraries. The example program libraries show how the software development kit can be used to program specific applications.
+The module structure of the mainboard firmware is shown in figure 4. The used hardware modules are colored in blue and the libraries are colored in green. The whole suit functionality can easily be accessed through high level functions provided by the software development kit libraries. The example program libraries show how the software development kit can be used to program specific applications.
 
 <figure role="group">
 <div align="center"><img src="doc/mainboardFirmware.png" width="600"></div> 
