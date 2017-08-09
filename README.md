@@ -80,7 +80,9 @@ The mainboard firmware can be found in the "mainboard" folder. It contains all l
 
 Before flashing the firmware to the sensor boards, the Arduino bootloader needs to be flashed to the sensor boards according to the [Arduino ISP instructions](https://www.arduino.cc/en/Tutorial/ArduinoISP). The sensor board firmware can be found in the "arduino/src/mpu9250_basicDMP" folder.
 
-// TODO: Was zur sensor board firmware schreiben
+The Digital Motion Processor (DMP) on the IMU of each sensor board performs 6-axis sensor fusion (ignoring the integrated magnetometer and barometer) using the [motion driver library](http://www.digikey.de/en/pdf/i/invensense/motion-driver-6-1-user-guide) of Invensense. The resulting quaternions and acceleration values are transmitted over I^2C to the ATmega328P microcontroller 100 times per second. The microcontroller then converts the quaternions into the euler coordinate system and normalizes the acceleration values into multiples of g = 9.81 m/s^2. 9-axis fusion is possible using the MPU9250, but would result in a slower update rate and additional need to calibrate the magnetometer each time the suit is powered up.
+
+We use master-slave communication over RS485 to communicate these values from each sensor board to the mainboard. The master (mainboard) requests new sensor values of one slave (sensor board) at a time. This avoids possible packet collisions on the bus. To differentiate the sensor boards from each other, the SLAVE_ID in mpu9250_basicDMP.ino has to be set to 1 through 4. Once a sensor board receives a request for new values, it checks if the request was meant for its SLAVE_ID. If that is the case, it sends back a package with the current yaw, pitch, roll, the current rates at which these values change, and the 3-axis acceleration values.
 
 ### App
 
