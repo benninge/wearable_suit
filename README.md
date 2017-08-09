@@ -84,6 +84,12 @@ The Digital Motion Processor (DMP) on the IMU of each sensor board performs 6-ax
 
 We use master-slave communication over RS485 to communicate these values from each sensor board to the mainboard. The master (mainboard) requests new sensor values of one slave (sensor board) at a time. This avoids possible packet collisions on the bus. To differentiate the sensor boards from each other, the SLAVE_ID in mpu9250_basicDMP.ino has to be set to 1 through 4. Once a sensor board receives a request for new values, it checks if the request was meant for its SLAVE_ID. If that is the case, it sends back a package with the current yaw, pitch, roll, the current rates at which these values change, and the 3-axis acceleration values.
 
+We used the following values for SLAVE_ID:
+* SLAVE_ID = 1: left arm
+* SLAVE_ID = 2: right arm
+* SLAVE_ID = 3: left leg
+* SLAVE_ID = 4: right leg
+
 ### App
 
 The "App" folder contains the app source code. the app cannot be used yet, because the bluetooth communication is not fully implemented.
