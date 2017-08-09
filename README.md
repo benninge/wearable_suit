@@ -68,12 +68,24 @@ The mainboard firmware can be found in the "mainboard" folder. It contains all l
 
 // TODO: Was zur Modulstruktur schreiben
 
-// TODO: Bild mit Modulstruktur einfügen
+Figure 4 shows the module structure of the mainboard firmware.
+
+<figure role="group">
+<div align="center"><img src="doc/mainboardFirmware.png" width="400"></div> 
+<div align="center"><figcaption> Figure 4: Module structure of the mainboard firmware </figcaption></div> 
+</figure>
 
 
 #### Examples
 
 // TODO: Was zu den Beispielprogrammen schreiben
+
+1: Music spectrum and color fade auto rotate demo
+2: Sound level and moving demo
+3: Music spectrum and strobe moving demo
+4: Moving and auto color fade demo
+5: Pulse and smiley demo
+6: Play Simon says
 
 
 ### Sensor board firmware
