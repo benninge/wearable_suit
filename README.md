@@ -76,7 +76,11 @@ The module structure of the mainboard firmware is shown in figure 4. The used ha
 
 #### Examples
 
-The smartSuit library offers some example programs which show the capabilities of the software development kit. The examples are directly called in the main function and can be chosen by passing a different demo number to the function "void smartSuit_demo(int demoNumber);". Available demos are:
+The smartSuit library offers some example programs which show the capabilities of the software development kit. The examples are directly called in the main function and can be chosen by passing a different demo number to the smartSuit_demo function :
+```c
+void smartSuit_demo(int demoNumber);
+```
+The following demos are available:
 
 1. Music spectrum and color fade auto rotate demo: Shows the music spectrum on the chest display and an automatically rotating color fade on arms and legs.
 2. Sound level and moving demo: Lights up moving body parts with an automatically rotating color fade. The suit brightness depends on the sound level.
