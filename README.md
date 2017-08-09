@@ -32,10 +32,8 @@ Before flashing the firmware to the sensor boards, the Arduino bootloader needs 
 
 The mainboard consists of an STM32F411E discovery board with a breadboard shield. The shield powers the discovery board and connects it to the sensor boards, the WS2812 RGB LED strips on arms and legs, the 10 x 10 LED display on the chest and the Adafruit MAX9814 microphone module. A wiring diagram of the mainboard shield is shown in figure 2. The mainboard firmware can be found in the "mainboard" folder.
 
-// TODO: Bild mit shield Schaltplan einfügen
-
 <figure role="group">
-<div align="center"><img src="" width="500"></div> 
+<div align="center"><img src="doc/shieldSchematic.png" width="500"></div> 
 <div align="center"><figcaption> Figure 2: Wiring diagram of the mainboard shield </figcaption></div> 
 </figure>
 
