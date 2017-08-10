@@ -20,7 +20,7 @@ The motion measurements are performed by inertial measurement units (IMUs) which
 
 ## Hardware architecture
 
-The system is built according to the hardware architecture given in figure 1. The centerpiece of the system is the mainboard. Tt contains an STM32 microcontroller, which controls all the other modules. It is connected to the IMU sensor modules over a bus systems and it directly controls all LEDs as well as the microphone module, which is used for music detection. A bluetooth connection to an Android app was also planned, but is currently not implemented.
+The system is built according to the hardware architecture given in figure 1. The centerpiece of the system is the mainboard. It contains an STM32 microcontroller, which controls all the other modules. It is connected to the IMU sensor modules over a bus systems and it directly controls all LEDs as well as the microphone module, which is used for music detection. A bluetooth connection to an Android app was also planned, but is currently not implemented.
 
 <figure role="group">
 <div align="center"><img src="poster/ledSuitSchematic.png" width="500"></div> 
@@ -37,7 +37,7 @@ The mainboard consists of an STM32F411E discovery board with a breadboard shield
 <div align="center"><figcaption> Figure 2: Wiring diagram of the mainboard shield </figcaption></div> 
 </figure>
 
-The sensor boards are connected over an RS-485 based bus system. The RS-485 transceiver should be a model with a 3.3V logic level. The chest display and the LED strips have to be connected according to the defines in WS2812.h ledSuit.h and ledSuit.c of the mainboard firmware (which may be configured according to the used led-strip lengths). Since the LED strips are powered with 5V, each LED strip uses a switching regulator to generate its supply voltage out of the 3s LiPo power supply (which is called VCC here).
+The sensor boards are connected over an RS-485 based bus system. The RS-485 transceiver should be a model with a 3.3V logic level. The chest display and the LED strips have to be connected according to the defines in the header files WS2812.h, ledSuit.h and the source file ledSuit.c of the mainboard firmware (which may be configured according to the used led-strip lengths). Since the LED strips are powered with 5V, each LED strip uses a switching regulator to generate its supply voltage out of the 3s LiPo power supply (which is called VCC here).
 
 
 ### Sensor board
@@ -104,6 +104,12 @@ The following values for SLAVE_ID are used:
 
 ### App
 
-The "App" folder contains the app source code. the app cannot be used yet, because the bluetooth communication is not fully implemented.
+The "App" folder contains the app source code. The app is programmed with Android Studio and therefore available for Android devices. With the help of the "Dancing Suit" app the user can select features for the suit. The app run on a smartphone but cannot connect to the suit yet, because the Bluetooth communication to the mainboard is not fully implemented.
 
-// TODO: Was zur App schreiben
+The app starts with a splash screen. From the main activity the user can connect the suit to the Bluetooth module and slide in a navigation drawer. It contains the navigation destinations: Right Arm, Left Arm, Right Leg, Left Leg, Suit, Demo, Info and Share and is shown in figure 5. The user can control each body part separately, can set settings for the hole suit, get information about the developer and find the share link for github.
+
+In the activity COLOR (figure 6) the settings for colors can be set. The checkboxes allow the user to select the colors. Furthermore, there are activities for the COLORFADE and the AUTOCOLORFADE. To get a overview about the functions and what they do, check out the header file ledSuit.h.
+
+For every of the three activities there is a spinner to choose the blinking-patter of the suit. Figure 7 show the contents in a pop-up dialog.
+
+To implement the wireless data exchange the Android Bluetooth APIs are used. The scan for bluetooth devices and adapting to the module with the insert mac address works but there is no function for data transmission.
