@@ -1,6 +1,6 @@
 # Smart dancing suit
 
-The smart dancing suit project was part of the [Wearable Computing Systems Lab Course](https://es.informatik.uni-freiburg.de/teaching/wearable-lab) during the summer semester of 2017. The idea is to develop an LED covered dancing suit which generates a light show according to the current music and movements of the wearer, instead of running a predefined choreography like it is done in other approaches. This is what makes the suit “smart".
+The smart dancing suit project was part of the [Wearable Computing Systems Lab Course](https://es.informatik.uni-freiburg.de/teaching/wearable-lab) during the summer semester of 2017. The idea is to develop an LED covered dancing suit which generates a light show according to the current music and movements of the wearer, instead of running a predefined choreography like it is done in other approaches. This is what makes the suit a “smart" dancing suit.
 
 Therefore the suit is equipped with a couple of sensors, which enable sensing of motions and sound. For the sound measurement, a microphone module is used. The measurement samples are then used to calculate the sound level or to apply a Fourier transform. The music spectrum can be shown on the chest display.
 The motion measurements are performed by inertial measurement units (IMUs) which are mounted on hands and feet. This allows movement detection of individual body parts.
