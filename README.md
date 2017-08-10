@@ -1,10 +1,9 @@
 # Smart dancing suit
 
-The smart dancing suit project was part of the [Wearable Computing Systems Lab Course](https://es.informatik.uni-freiburg.de/teaching/wearable-lab) during the summer semester of 2017. The idea is to develop an LED covered dancing suit which generates a light show according to the current music and movements of the wearer, instead of running a predefined choreography like it is done in other approaches. This is what we call a “smart" dancing suit.
+The smart dancing suit project was part of the [Wearable Computing Systems Lab Course](https://es.informatik.uni-freiburg.de/teaching/wearable-lab) during the summer semester of 2017. The idea is to develop an LED covered dancing suit which generates a light show according to the current music and movements of the wearer, instead of running a predefined choreography like it is done in other approaches. This is what makes the suit “smart".
 
-Therefore the suit is equipped with a couple of sensors which enable sensing of motions and sound.
-For the sound measurement a microphone module is used. The measurement samples are then used to calculate the sound level or to apply a Fourier transform. The music spectrum can be shown on the chest display.
-The motion measurement are performed by inertial measurement units (IMUs) which are mounted on hands and feet. This allows movement detection of individual body parts.
+Therefore the suit is equipped with a couple of sensors, which enable sensing of motions and sound. For the sound measurement, a microphone module is used. The measurement samples are then used to calculate the sound level or to apply a Fourier transform. The music spectrum can be shown on the chest display.
+The motion measurements are performed by inertial measurement units (IMUs) which are mounted on hands and feet. This allows movement detection of individual body parts.
 
 
 ## Contents
@@ -21,7 +20,7 @@ The motion measurement are performed by inertial measurement units (IMUs) which 
 
 ## Hardware architecture
 
-The system is built according to the hardware architecture given in figure 1. The centerpiece of the system is the mainboard it contains an STM32 microcontroller which controls all the other modules. It is connected to the IMU sensor modules over a bus systems and it directly controls all LEDs as well as the microphone module which is used for music detection. A bluetooth connection to an Android app was also planned but is currently not implemented.
+The system is built according to the hardware architecture given in figure 1. The centerpiece of the system is the mainboard. Tt contains an STM32 microcontroller, which controls all the other modules. It is connected to the IMU sensor modules over a bus systems and it directly controls all LEDs as well as the microphone module, which is used for music detection. A bluetooth connection to an Android app was also planned, but is currently not implemented.
 
 <figure role="group">
 <div align="center"><img src="poster/ledSuitSchematic.png" width="500"></div> 
@@ -38,7 +37,7 @@ The mainboard consists of an STM32F411E discovery board with a breadboard shield
 <div align="center"><figcaption> Figure 2: Wiring diagram of the mainboard shield </figcaption></div> 
 </figure>
 
-The sensor boards are connected over an RS-485 based bus system. The RS-485 transceiver needs to be a model with 3.3V logic level. The chest display and the LED strips have to be connected according to the defines in WS2812.h ledSuit.h and ledSuit.c of the mainboard firmware (which may be configured according to the used led-strip lengths). Since the LED strips are powered with 5V, each LED strip uses a switching regulator to generate its supply voltage out of the 3s LiPo power supply (which is called VCC here).
+The sensor boards are connected over an RS-485 based bus system. The RS-485 transceiver should be a model with a 3.3V logic level. The chest display and the LED strips have to be connected according to the defines in WS2812.h ledSuit.h and ledSuit.c of the mainboard firmware (which may be configured according to the used led-strip lengths). Since the LED strips are powered with 5V, each LED strip uses a switching regulator to generate its supply voltage out of the 3s LiPo power supply (which is called VCC here).
 
 
 ### Sensor board
@@ -54,7 +53,7 @@ The sensor module is an Arduino compatible custom circuit board. Figure 3 shows 
 
 ## Software
 
-This project provides a software development kit for the mainboard containing examples. Additionally a sensor board firmware is provided as well as an incomplete android app to control the suit with a smartphone.
+This project provides a software development kit for the mainboard containing examples. Additionally, a sensor board firmware is provided as well as an incomplete Android app to control the suit with a smartphone.
 
 
 ### Mainboard firmware
@@ -64,7 +63,7 @@ The mainboard firmware can be found in the "mainboard" folder. It contains all l
 
 #### Libraries
 
-The module structure of the mainboard firmware is shown in figure 4. The used hardware modules are colored in blue and the libraries are colored in green. The whole suit functionality can easily be accessed through high level functions provided by the software development kit libraries. The example program libraries show how the software development kit can be used to program specific applications.
+The module structure of the mainboard firmware is shown in figure 4. The used hardware modules are colored in blue and the libraries are colored in green. The whole suit functionality can easily be accessed through high level functions, provided by the software development kit libraries. The example program libraries show how the software development kit can be used, to program specific applications.
 
 <figure role="group">
 <div align="center"><img src="doc/mainboardFirmware.png" width="600"></div> 
@@ -85,7 +84,7 @@ The following demos are available:
 3. Music spectrum and strobe moving demo: Shows the music spectrum on the chest display and lights up moving body parts with a strobe.
 4. Moving and auto color fade demo: Fades the color of the whole Suit and lights up moving body parts.
 5. Pulse and smiley demo: Shows moving pulses on arms and legs and a smiley on the chest display.
-6. Play Simon says: An implementation of the game "Simon says". The suit displays body movements which the wearer has to reproduce.
+6. Play Simon says: An implementation of the game "Simon says". The suit displays body movements, which the wearer has to reproduce.
 
 
 ### Sensor board firmware
