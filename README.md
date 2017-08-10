@@ -108,8 +108,23 @@ The "App" folder contains the app source code. The app is programmed with Androi
 
 The app starts with a splash screen. From the main activity the user can connect the suit to the Bluetooth module and slide in a navigation drawer. It contains the navigation destinations: Right Arm, Left Arm, Right Leg, Left Leg, Suit, Demo, Info and Share and is shown in figure 5. The user can control each body part separately, can set settings for the hole suit, get information about the developer and find the share link for github.
 
+<figure role="group">
+<div align="center"><img src="doc/ScreenshotMenu.jpeg" width="300"></div> 
+<div align="center"><figcaption> Figure 5: Navigation Drawer for Dancing Suit </figcaption></div> 
+</figure>
+
 In the activity COLOR (figure 6) the settings for colors can be set. The checkboxes allow the user to select the colors. Furthermore, there are activities for the COLORFADE and the AUTOCOLORFADE. To get a overview about the functions and what they do, check out the header file ledSuit.h.
+
+<figure role="group">
+<div align="center"><img src="doc/ScreenshotColor.jpeg" width="300"></div> 
+<div align="center"><figcaption> Figure 6: Activity for Color settings </figcaption></div> 
+</figure>
 
 For every of the three activities there is a spinner to choose the blinking-patter of the suit. Figure 7 show the contents in a pop-up dialog.
 
-To implement the wireless data exchange the Android Bluetooth APIs are used. The scan for bluetooth devices and adapting to the module with the insert mac address works but there is no function for data transmission.
+<figure role="group">
+<div align="center"><img src="doc/ScreenshotDialog.jpeg" width="175"></div> 
+<div align="center"><figcaption> Figure 7: Spinner Dialog for Blinking-Pattern </figcaption></div> 
+</figure>
+
+To implement the wireless data exchange the Android Bluetooth APIs are used. Following the guide form the [Android Developers] (https://developer.android.com/guide/topics/connectivity/bluetooth.html) scanning for Bluetooth devices and adapting to the module with the insert mac address works but there is no function for data transmission.
