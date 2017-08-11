@@ -104,27 +104,27 @@ The following values for SLAVE_ID are used:
 
 ### App
 
-The "App" folder contains the app source code. The app is programmed with Android Studio and therefore available for Android devices. With the help of the "Dancing Suit" app the user can select features for the suit. The app run on a smartphone but cannot connect to the suit yet, because the Bluetooth communication to the mainboard is not fully implemented.
+The "App" folder contains the app source code. The app is programmed with Android Studio and therefore available for Android devices. With the help of the "Dancing Suit" app, the user can select features for the suit. The app runs on a smartphone but cannot connect to the suit yet, because the Bluetooth communication to the mainboard is not fully implemented.
 
-The app starts with a splash screen. From the main activity the user can connect the suit to the Bluetooth module and slide in a navigation drawer. It contains the navigation destinations: Right Arm, Left Arm, Right Leg, Left Leg, Suit, Demo, Info and Share and is shown in figure 5. The user can control each body part separately, can set settings for the hole suit, get information about the developer and find the share link for github.
+The app starts with a splash screen. From the main activity the user can connect the suit to the Bluetooth module and slide in a navigation drawer. It contains the navigation destinations "Right Arm", "Left Arm", "Right Leg", "Left Leg", "Suit", "Demo", "Info" and "Share". A screenshot of the navigation drawer is shown in figure 5. The user can control each body part separately, set settings for the hole suit, get information about the developer and find the share link for github.
 
 <figure role="group">
 <div align="center"><img src="doc/ScreenshotMenu.jpeg" width="225"></div> 
-<div align="center"><figcaption> Figure 5: Navigation Drawer for Dancing Suit </figcaption></div> 
+<div align="center"><figcaption> Figure 5: Navigation drawer of the Dancing Suit app </figcaption></div> 
 </figure>
 
-In the activity COLOR (figure 6) the settings for colors can be set. The checkboxes allow the user to select the colors. Furthermore, there are activities for the COLORFADE and the AUTOCOLORFADE. To get a overview about the functions and what they do, check out the header file ledSuit.h.
+In the activity COLOR, which is shown in figure 6, the settings for colors can be set. The checkboxes allow the user to select the colors. Furthermore, there are activities for the COLORFADE function and the AUTOCOLORFADE function. To get an overview about the functions and what they do, check out the header file "ledSuit.h" in the mainboard firmware.
 
 <figure role="group">
 <div align="center"><img src="doc/ScreenshotColor.jpeg" width="225"></div> 
-<div align="center"><figcaption> Figure 6: Activity for Color settings </figcaption></div> 
+<div align="center"><figcaption> Figure 6: Activity for color settings </figcaption></div> 
 </figure>
 
-For every of the three activities there is a spinner to choose the blinking-patter of the suit. Figure 7 show the contents in a pop-up dialog.
+For each of the three activities, there is a spinner to choose the blinking pattern of the suit. Figure 7 shows the contents in a pop-up dialog.
 
 <figure role="group">
 <div align="center"><img src="doc/ScreenshotDialog.jpeg" width="175"></div> 
-<div align="center"><figcaption> Figure 7: Spinner Dialog for Blinking-Pattern </figcaption></div> 
+<div align="center"><figcaption> Figure 7: Spinner dialog for blinking pattern </figcaption></div> 
 </figure>
 
 To implement the wireless data exchange the Android Bluetooth APIs are used. Following the guide from 
