@@ -109,7 +109,9 @@ The "App" folder contains the app source code. The app is programmed with Androi
 The app starts with a splash screen. From the main activity the user can connect the suit to the Bluetooth module and slide in a navigation drawer. It contains the navigation destinations "Right Arm", "Left Arm", "Right Leg", "Left Leg", "Suit", "Demo", "Info" and "Share". A screenshot of the navigation drawer is shown in figure 5. The user can control each body part separately, set settings for the hole suit, get information about the developer and find the share link for github.
 
 <figure role="group">
-<div align="center"><img src="doc/ScreenshotMenu.jpeg" width="225"></div> 
+<div align="center"><img src="doc/ScreenshotMenu.jpeg" width="225">
+<img src="doc/ScreenshotColor.jpeg" width="225">
+<img src="doc/ScreenshotDialog.jpeg" width="175"></div> 
 <div align="center"><figcaption> Figure 5: Navigation drawer of the Dancing Suit app </figcaption></div> 
 </figure>
 
