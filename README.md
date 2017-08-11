@@ -108,14 +108,14 @@ The "App" folder contains the app source code. The app is programmed with Androi
 
 The app starts with a splash screen. From the main activity the user can connect the suit to the Bluetooth module and slide in a navigation drawer. It contains the navigation destinations "Right Arm", "Left Arm", "Right Leg", "Left Leg", "Suit", "Demo", "Info" and "Share". A screenshot of the navigation drawer is shown in figure 5 (left). The user can control each body part separately, set settings for the hole suit, get information about the developer and find the share link for github.
 
+In the activity COLOR, which is shown in figure 5 (middle), the settings for colors can be set. The checkboxes allow the user to select the colors. Furthermore, there are activities for the COLORFADE function and the AUTOCOLORFADE function. To get an overview about the functions and what they do, check out the header file "ledSuit.h" in the mainboard firmware. For each of the three activities, there is a spinner to choose the blinking pattern of the suit. Figure 5 (right) shows the contents in a pop-up dialog.
+
 <figure role="group">
 <div align="center"><img src="doc/ScreenshotMenu.jpeg" width="225">
 <img src="doc/ScreenshotColor.jpeg" width="225">
 <img src="doc/ScreenshotDialog.jpeg" width="225"></div> 
 <div align="center"><figcaption> Figure 5: Navigation drawer of the Dancing Suit app (left), activity for color settings (middle) and spinner dialog for blinking pattern (right)</figcaption></div> 
 </figure>
-
-In the activity COLOR, which is shown in figure 5 (middle), the settings for colors can be set. The checkboxes allow the user to select the colors. Furthermore, there are activities for the COLORFADE function and the AUTOCOLORFADE function. To get an overview about the functions and what they do, check out the header file "ledSuit.h" in the mainboard firmware. For each of the three activities, there is a spinner to choose the blinking pattern of the suit. Figure 5 (right) shows the contents in a pop-up dialog.
 
 To implement the wireless data exchange the Android Bluetooth APIs are used. Following the guide from 
 [Android Developers](https://developer.android.com/guide/topics/connectivity/bluetooth.html), scanning for Bluetooth devices and adapting to the module with an insert mac address works but there is no function for data transmission.
